@@ -1,0 +1,46 @@
+[pyprland]
+plugins = [
+    "expose",
+    "fetch_client_menu",
+    "lost_windows",
+    "magnify",
+    "scratchpads",
+    "shift_monitors",
+    "toggle_special",
+    "workspaces_follow_focus",
+]
+
+# Variables for demonstration purposes
+[pyprland.variables]
+term_classed = "alacritty --class"
+
+# Scratchpad configurations
+[scratchpads.term]
+animation = "fromTop"
+command = "[term_classed] scratchpad-term"
+class = "scratchpad-term"
+size = "75% 60%"
+max_size = "1920px 100%"
+lazy = true
+
+[scratchpads.volume]
+animation = "fromRight"
+command = "pavucontrol"
+class = "pavucontrol"
+size = "40% 90%"
+lazy = true
+
+[scratchpads.btop]
+animation = "fromTop"
+command = "[term_classed] scratchpad-btop -e btop"
+class = "scratchpad-btop"
+size = "80% 80%"
+lazy = true
+
+# Expose plugin configuration
+[expose]
+include_special = false
+
+# Magnify configuration
+[magnify]
+factor = 2

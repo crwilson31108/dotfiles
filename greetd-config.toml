@@ -1,0 +1,13 @@
+[terminal]
+# The VT to run the greeter on
+vt = 1
+
+[default_session]
+# The greeter to run
+command = "regreet"
+user = "greeter"
+
+[initial_session]
+# Auto-login configuration (optional, comment out if you don't want auto-login)
+# command = "Hyprland"
+# user = "caseyw"
