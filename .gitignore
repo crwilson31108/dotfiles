@@ -1,3 +1,10 @@
+# Allow Hyprland and Waybar configs
+!.config/
+!.config/hypr/
+!.config/hypr/**
+!.config/waybar/
+!.config/waybar/**
+
 # Cache and temporary files
 **/cache/
 **/Cache/
