@@ -124,10 +124,12 @@
         "tooltip": true
     },
     "backlight": {
+        "device": "intel_backlight",
         "format": "☀ {percent}%",
         "tooltip-format": "Brightness: {percent}%",
         "on-scroll-up": "brightnessctl set +5%",
         "on-scroll-down": "brightnessctl set 5%-",
+        "interval": 2,
         "tooltip": true
     },
     "custom/power-profile": {
