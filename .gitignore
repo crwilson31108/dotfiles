@@ -1,0 +1,25 @@
+# Ignore everything by default
+/*
+
+# But track these dotfiles
+!.config/
+!.config/waybar/
+!.config/waybar/**
+!.gitignore
+
+# Ignore sensitive/private files
+.bash_history
+.cache/
+.gnupg/
+.mozilla/
+.thunderbird/
+.ssh/
+.local/share/
+.npm/
+.cargo/
+.steam/
+.var/
+.vscode/
+.pulse-cookie
+.wget-hsts
+*.zwc
