@@ -1,0 +1,22 @@
+# Regreet configuration with Catppuccin theme
+
+[background]
+# Use the same wallpaper path as your Hyprland setup
+path = "/home/caseyw/Pictures/Wallpapers/catppuccin-wallpapers/gradients/cat-mocha.png"
+fit = "Cover"
+
+[GTK]
+# Use dark theme
+application_prefer_dark_theme = true
+theme_name = "Catppuccin-Mocha-Standard-Mauve-Dark"
+icon_theme_name = "Papirus-Dark"
+font_name = "Cantarell 11"
+
+[commands]
+# Command to run after login
+reboot = ["systemctl", "reboot"]
+poweroff = ["systemctl", "poweroff"]
+
+# The session to start (Hyprland)
+[env]
+GTK_THEME = "Catppuccin-Mocha-Standard-Mauve-Dark"

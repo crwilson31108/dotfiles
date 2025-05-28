@@ -1,0 +1,70 @@
+/* Catppuccin Frappé Theme for Wofi Power Profile Menu */
+
+/* Color definitions */
+@define-color base #303446;
+@define-color mantle #292c3c;
+@define-color crust #232634;
+@define-color text #c6d0f5;
+@define-color surface0 #414559;
+@define-color surface1 #51576d;
+@define-color green #a6d189;
+@define-color teal #81c8be;
+@define-color yellow #e5c890;
+
+window {
+    margin: 0px;
+    border: 2px solid alpha(@green, 0.9);
+    border-radius: 10px;
+    background-color: alpha(@base, 0.95);
+    font-family: "JetBrains Mono", "Cantarell", sans-serif;
+    font-size: 16px;
+}
+
+#input {
+    margin: 5px;
+    border: 2px solid @surface1;
+    border-radius: 5px;
+    color: @text;
+    background-color: alpha(@surface0, 0.7);
+    padding: 8px;
+}
+
+#inner-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#outer-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#text {
+    margin: 5px;
+    border: none;
+    color: @text;
+    font-weight: bold;
+    padding: 8px;
+}
+
+#entry {
+    margin: 2px 5px;
+    border-radius: 5px;
+    background-color: alpha(@surface0, 0.3);
+}
+
+#entry:selected {
+    background: linear-gradient(45deg, alpha(@green, 0.9), alpha(@teal, 0.9));
+    border-radius: 5px;
+}
+
+#entry:selected #text {
+    color: @crust;
+}
