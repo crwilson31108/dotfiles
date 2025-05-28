@@ -1,0 +1,177 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 40,
+    "spacing": 4,
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["custom/notification", "bluetooth", "custom/power-profile", "backlight", "pulseaudio", "network", "battery", "custom/powermenu"],
+    
+    "custom/powermenu": {
+        "format": "⏻",
+        "on-click": "~/.config/waybar/scripts/power-menu.sh",
+        "tooltip": false
+    },
+    "custom/screenshot": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/screenshot.sh",
+        "on-click": "~/.config/waybar/scripts/screenshot.sh region",
+        "on-click-right": "~/.config/waybar/scripts/screenshot.sh menu",
+        "on-click-middle": "~/.config/waybar/scripts/screenshot.sh window",
+        "tooltip": true
+    },
+    "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "󰂚<span foreground='red'><sup></sup></span>",
+            "none": "󰂚",
+            "dnd-notification": "󰂛<span foreground='red'><sup></sup></span>",
+            "dnd-none": "󰂛",
+            "inhibited-notification": "󰂚<span foreground='red'><sup></sup></span>",
+            "inhibited-none": "󰂚",
+            "dnd-inhibited-notification": "󰂛<span foreground='red'><sup></sup></span>",
+            "dnd-inhibited-none": "󰂛"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate", 
+        "active-only": false,
+        "disable-scroll": false,
+        "all-outputs": true,
+        "sort-by-number": true,
+        "show-special": false,
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": []
+        },
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1"
+    },
+    "hyprland/window": {
+        "max-length": 50
+    },
+    "clock": {
+        "timezone": "America/Los_Angeles",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format": "{:%Y-%m-%d  %I:%M %p}",
+        "tooltip": true
+    },
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "⚡ {capacity}%",
+        "format-plugged": "🔌 {capacity}%",
+        "tooltip-format": "{capacity}% - {time}",
+        "format-icons": ["🔋", "🔋", "🔋", "🔋", "🔋"],
+        "tooltip": true
+    },
+    "network": {
+        "format-wifi": " {essid}",
+        "format-ethernet": " {ipaddr}",
+        "format-disconnected": "󰖪 Disconnected",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%)\nIP: {ipaddr}\n⬆️ {bandwidthUpBytes} ⬇️ {bandwidthDownBytes}",
+        "tooltip-format-ethernet": "Connected via Ethernet\nIP: {ipaddr}\n⬆️ {bandwidthUpBytes} ⬇️ {bandwidthDownBytes}",
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "~/.config/waybar/scripts/network-menu.sh",
+        "interval": 5,
+        "tooltip": true
+    },
+    "bluetooth": {
+        "format": " {status}",
+        "format-disabled": "",
+        "format-off": "",
+        "format-on": "",
+        "format-connected": " {device_alias}",
+        "format-connected-battery": " {device_alias} {device_battery_percentage}%",
+        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+        "on-click": "blueman-manager",
+        "tooltip": true
+    },
+    "pulseaudio": {
+        "format": "{icon}",
+        "format-bluetooth": "",
+        "format-bluetooth-muted": "",
+        "format-muted": "",
+        "tooltip-format": "Volume: {volume}%",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol",
+        "tooltip": true
+    },
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "☀ {percent}%",
+        "tooltip-format": "Brightness: {percent}%",
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-",
+        "interval": 2,
+        "tooltip": true
+    },
+    "custom/power-profile": {
+        "format": "{text}",
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/power-profile.sh",
+        "on-click": "~/.config/waybar/scripts/power-profile-select.sh",
+        "interval": 30,
+        "signal": 8,
+        "tooltip": true
+    },
+    "pulseaudio": {
+        "format": "{icon}",
+        "format-bluetooth": "{icon}",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "scroll-step": 5,
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "pavucontrol",
+        "tooltip": true,
+        "tooltip-format": "{desc}: {volume}%"
+    },
+    "custom/audio": {
+        "format": "{icon}",
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/audio-control.sh",
+        "exec-on-event": true,
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle", 
+        "on-click-middle": "~/.config/waybar/scripts/audio-selector.sh",
+        "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
+        "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
+        "interval": 1,
+        "signal": 9,
+        "tooltip": true
+    }
+}
