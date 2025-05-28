@@ -5,7 +5,7 @@
     "spacing": 4,
     "modules-left": ["hyprland/workspaces", "hyprland/window"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/notification", "bluetooth", "custom/power-profile", "backlight", "pulseaudio", "network", "battery", "custom/powermenu"],
+    "modules-right": ["custom/notification", "bluetooth", "power-profiles-daemon", "backlight", "pulseaudio", "network", "battery", "custom/powermenu"],
     
     "custom/powermenu": {
         "format": "⏻",
@@ -105,24 +105,6 @@
         "on-click": "blueman-manager",
         "tooltip": true
     },
-    "pulseaudio": {
-        "format": "{icon}",
-        "format-bluetooth": "",
-        "format-bluetooth-muted": "",
-        "format-muted": "",
-        "tooltip-format": "Volume: {volume}%",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
-        },
-        "on-click": "pavucontrol",
-        "tooltip": true
-    },
     "backlight": {
         "device": "intel_backlight",
         "format": "☀ {percent}%",
@@ -132,18 +114,20 @@
         "interval": 2,
         "tooltip": true
     },
-    "custom/power-profile": {
-        "format": "{text}",
-        "return-type": "json",
-        "exec": "~/.config/waybar/scripts/power-profile.sh",
-        "on-click": "~/.config/waybar/scripts/power-profile-select.sh",
-        "interval": 30,
-        "signal": 8,
-        "tooltip": true
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "",
+            "performance": "",
+            "balanced": "",
+            "power-saver": ""
+        }
     },
     "pulseaudio": {
-        "format": "{icon}",
-        "format-bluetooth": "{icon}",
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{icon} {volume}%",
         "format-muted": "󰝟",
         "format-icons": {
             "headphone": "",
@@ -157,21 +141,9 @@
         "scroll-step": 5,
         "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-click-right": "pavucontrol",
-        "tooltip": true,
-        "tooltip-format": "{desc}: {volume}%"
-    },
-    "custom/audio": {
-        "format": "{icon}",
-        "return-type": "json",
-        "exec": "~/.config/waybar/scripts/audio-control.sh",
-        "exec-on-event": true,
-        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-        "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle", 
-        "on-click-middle": "~/.config/waybar/scripts/audio-selector.sh",
         "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
         "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%",
-        "interval": 1,
-        "signal": 9,
-        "tooltip": true
+        "tooltip": true,
+        "tooltip-format": "{desc}: {volume}%"
     }
 }
