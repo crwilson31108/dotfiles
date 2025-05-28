@@ -1,0 +1,10 @@
+[General]
+ColorScheme=CatppuccinMocha
+Name=Catppuccin Mocha
+
+[Icons]
+Theme=Papirus-Dark
+
+[KDE]
+ColorScheme=CatppuccinMocha
+widgetStyle=qt6ct-style

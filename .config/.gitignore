@@ -1,27 +1,3 @@
-# Track the entire .config directory
-!.config/
-!.config/**
-
-# But ignore these within .config
-.config/BraveSoftware/
-.config/Code/CachedData/
-.config/Code/Cache/
-.config/Code/CachedExtensionVSIXs/
-.config/Code/User/workspaceStorage/
-.config/Code/User/globalStorage/
-.config/Code/User/History/
-.config/Bazecor/
-.config/dconf/
-.config/pulse/
-.config/discord/
-.config/spotify/
-.config/teams/
-.config/zoom/
-.config/slack/
-.config/google-chrome/
-.config/chromium/
-.config/firefox/
-
 # Cache and temporary files
 **/cache/
 **/Cache/
@@ -105,18 +81,3 @@ npm-debug.log
 *.so
 *.dll
 *.exe
-
-# Personal/sensitive files
-.bash_history
-.gnupg/
-.mozilla/
-.thunderbird/
-.ssh/
-.local/share/
-.npm/
-.cargo/
-.steam/
-.var/
-.pulse-cookie
-.wget-hsts
-*.zwc

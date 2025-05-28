@@ -1,0 +1,54 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 40,
+    "spacing": 15,
+    "margin": 0,
+    "modules-left": ["custom/launcher", "custom/keybindings"],
+    "modules-center": [],
+    "modules-right": ["tray", "custom/screenshot", "custom/updates", "custom/spacer"],
+
+
+    "custom/launcher": {
+        "format": "≡",
+        "on-click": "wofi --show drun",
+        "tooltip": false
+    },
+    
+    "custom/keybindings": {
+        "format": "⌨",
+        "on-click": "~/.config/waybar/scripts/keybindings.sh",
+        "tooltip": "Keybindings Cheat Sheet"
+    },
+    
+    "custom/screenshot": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/screenshot.sh",
+        "on-click": "~/.config/waybar/scripts/screenshot.sh region",
+        "on-click-right": "~/.config/waybar/scripts/screenshot.sh menu",
+        "on-click-middle": "~/.config/waybar/scripts/screenshot.sh window",
+        "tooltip": true
+    },
+    
+    "custom/updates": {
+        "exec": "count=$(checkupdates | wc -l); if [ $count -eq 0 ]; then echo '🟢'; else echo \"📦 $count updates\"; fi",
+        "interval": 1800,
+        "format": "{}",
+        "on-click": "alacritty --class update-sys -T update-sys -e bash -c 'yay -Syu && pkill -SIGRTMIN+8 waybar'",
+        "signal": 8,
+        "tooltip": true
+    },
+    
+    "custom/spacer": {
+        "format": " ",
+        "tooltip": false
+    },
+    
+    "tray": {
+        "icon-size": 18,
+        "spacing": 10,
+        "show-passive-items": true,
+        "ignore-list": ["nm-applet", "network-manager-applet"]
+    }
+}
