@@ -1,0 +1,12 @@
+/* Catppuccin Frappé theme colors */
+@define-color main-bg rgba(65, 69, 89, 0.95);
+@define-color main-fg #c6d0f5;
+@define-color wb-act-bg rgba(140, 170, 238, 0.5);
+@define-color wb-hvr-bg rgba(140, 170, 238, 0.7);
+
+/* Animation */
+@keyframes gradient_f {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
