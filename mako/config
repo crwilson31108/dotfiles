@@ -1,11 +1,45 @@
-max-visible=10
+# Catppuccin Mocha Red theme for Mako
+font=JetBrainsMono Nerd Font 11
+width=350
+height=200
+margin=10,10,45
+padding=15
+border-size=2
+border-radius=12
+icons=1
+max-icon-size=64
+icon-location=left
+markup=1
+actions=1
+history=1
+text-alignment=left
+default-timeout=5000
+ignore-timeout=0
+max-visible=5
 layer=top
-font=Sarasa UI SC 10
-background-color=#4c566add
-text-color=#d8dee9
-border-color=#434c5e
-border-radius=7
-max-icon-size=48
-default-timeout=10000
+
+# Position - top right with offset for waybar
 anchor=top-right
-margin=20
+
+# Catppuccin Mocha Red colors
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#f38ba8
+progress-color=#f38ba8
+
+# Urgency levels
+[urgency=low]
+border-color=#a6e3a1
+text-color=#cdd6f4
+
+[urgency=normal]
+border-color=#f38ba8
+text-color=#cdd6f4
+
+[urgency=high]
+border-color=#f38ba8
+text-color=#f38ba8
+default-timeout=0
+
+# Format
+format=<b>%a</b>\n%s\n%b

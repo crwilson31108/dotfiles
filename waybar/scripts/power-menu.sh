@@ -8,7 +8,7 @@ if pgrep -x "wlogout" >/dev/null; then
     exit 0
 fi
 
-# Use style 2 (2x2 grid)
+# Use 2x2 grid layout
 confDir="$HOME/.config"
 wLayout="${confDir}/wlogout/layout"
 wlTmplt="${confDir}/wlogout/style.css"
@@ -18,23 +18,22 @@ x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
 y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
 hypr_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
 
-# Scale for 2x2 grid (style 2) - smaller values = smaller menu
+# Scale for 2x2 grid - clean centered layout
 wlColms=2
-export x_mgn=$((x_mon * 38 / hypr_scale))  # Decreased to make menu bigger
-export y_mgn=$((y_mon * 30 / hypr_scale))  # Decreased to make menu bigger
-export x_hvr=$((x_mon * 36 / hypr_scale))
-export y_hvr=$((y_mon * 28 / hypr_scale))
+export x_mgn=$((x_mon * 25 / hypr_scale))   # Base margin from edges
+export y_mgn=$((y_mon * 25 / hypr_scale))   # Base margin from top/bottom
+export x_hvr=$((x_mon * 23 / hypr_scale))   # Hover margin (slightly smaller)
+export y_hvr=$((y_mon * 23 / hypr_scale))   # Hover margin (slightly smaller)
 
-# Smaller font size
-export fntSize=$((y_mon * 15 / 1000))  # Reduced from 2/100
+# Clean font size
+export fntSize=$((y_mon * 25 / 1000))
 
 # Use white icons for dark theme
 export BtnCol="white"
 
-# Border radius
-hypr_border=10
-export active_rad=$((hypr_border * 5))
-export button_rad=$((hypr_border * 8))
+# Clean border radius values
+export active_rad=25     # Hover border radius
+export button_rad=15     # Base button border radius
 
 # Create waybar theme file if it doesn't exist (for the CSS import)
 mkdir -p ~/.config/waybar

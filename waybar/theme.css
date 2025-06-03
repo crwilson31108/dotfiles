@@ -1,8 +1,8 @@
-/* Catppuccin Frappé theme colors */
-@define-color main-bg rgba(65, 69, 89, 0.95);
-@define-color main-fg #c6d0f5;
-@define-color wb-act-bg rgba(140, 170, 238, 0.5);
-@define-color wb-hvr-bg rgba(140, 170, 238, 0.7);
+/* Catppuccin Mocha Red theme colors */
+@define-color main-bg rgba(30, 30, 46, 0.95);
+@define-color main-fg #cdd6f4;
+@define-color wb-act-bg rgba(243, 139, 168, 0.5);
+@define-color wb-hvr-bg rgba(243, 139, 168, 0.7);
 
 /* Animation */
 @keyframes gradient_f {
