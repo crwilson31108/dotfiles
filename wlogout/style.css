@@ -4,13 +4,6 @@
 @define-color wb-act-bg rgba(243, 139, 168, 0.6);
 @define-color wb-hvr-bg rgba(243, 139, 168, 0.8);
 
-/* Animation */
-@keyframes gradient_f {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 * {
     background-image: none;
     font-size: 16px;
@@ -39,7 +32,6 @@ button:hover {
     background-size: 25%;
     border-radius: 25px;
     transition: all 0.3s cubic-bezier(.55,0.0,.28,1.682);
-    box-shadow: 0 8px 30px rgba(243, 139, 168, 0.4);
     color: rgba(30, 30, 46, 1);
 }
 
@@ -65,24 +57,24 @@ button:hover#reboot {
 
 #lock {
     background-image: image(url("/home/caseyw/.config/wlogout/icons/lock_white.png"), url("/usr/share/wlogout/icons/lock.png"), url("/usr/local/share/wlogout/icons/lock.png"));
-    border-radius: 15px 0px 0px 0px;
+    border-radius: 60px 0px 0px 0px;
     margin: 200px 0px 0px 200px;
 }
 
 #logout {
     background-image: image(url("/home/caseyw/.config/wlogout/icons/logout_white.png"), url("/usr/share/wlogout/icons/logout.png"), url("/usr/local/share/wlogout/icons/logout.png"));
-    border-radius: 0px 0px 0px 15px;
+    border-radius: 0px 0px 0px 60px;
     margin: 0px 0px 200px 200px;
 }
 
 #shutdown {
     background-image: image(url("/home/caseyw/.config/wlogout/icons/shutdown_white.png"), url("/usr/share/wlogout/icons/shutdown.png"), url("/usr/local/share/wlogout/icons/shutdown.png"));
-    border-radius: 0px 15px 0px 0px;
+    border-radius: 0px 60px 0px 0px;
     margin: 200px 200px 0px 0px;
 }
 
 #reboot {
     background-image: image(url("/home/caseyw/.config/wlogout/icons/reboot_white.png"), url("/usr/share/wlogout/icons/reboot.png"), url("/usr/local/share/wlogout/icons/reboot.png"));
-    border-radius: 0px 0px 15px 0px;
+    border-radius: 0px 0px 60px 0px;
     margin: 0px 200px 200px 0px;
 }

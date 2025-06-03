@@ -31,29 +31,6 @@ export fntSize=$((y_mon * 25 / 1000))
 # Use white icons for dark theme
 export BtnCol="white"
 
-# Clean border radius values
-export active_rad=25     # Hover border radius
-export button_rad=15     # Base button border radius
-
-# Create waybar theme file if it doesn't exist (for the CSS import)
-mkdir -p ~/.config/waybar
-if [ ! -f ~/.config/waybar/theme.css ]; then
-    cat > ~/.config/waybar/theme.css << 'EOF'
-/* Catppuccin Frappé theme colors */
-@define-color main-bg rgba(65, 69, 89, 0.95);
-@define-color main-fg #c6d0f5;
-@define-color wb-act-bg rgba(140, 170, 238, 0.5);
-@define-color wb-hvr-bg rgba(140, 170, 238, 0.7);
-
-/* Animation */
-@keyframes gradient_f {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-EOF
-fi
-
 # Process the CSS template
 wlStyle="$(envsubst <"${wlTmplt}")"
 
