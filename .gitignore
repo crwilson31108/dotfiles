@@ -58,9 +58,7 @@ dconf/
 **/*token*
 **/*secret*
 **/*password*
-**/*key*
 **/*.pem
-**/*.key
 **/*.cert
 
 # Large binary files
