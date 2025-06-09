@@ -96,6 +96,14 @@ yay -S \
   bibata-cursor-theme
 ```
 
+## Step 3: Papirus Icon Theme
+```bash
+sudo pacman -S papirus-icon-theme
+yay -S papirus-folders
+papirus-folders -C red --theme Papirus
+papirus-folders -C red --theme Papirus-Dark
+```
+
 ## Package Categories
 
 ### Core Hyprland Components

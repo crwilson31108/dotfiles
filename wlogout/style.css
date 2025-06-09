@@ -67,6 +67,12 @@ button:hover#reboot {
     margin: 0px 0px 200px 200px;
 }
 
+#suspend {
+    background-image: image(url("$HOME/.config/wlogout/icons/suspend_white.png"), url("/usr/share/wlogout/icons/suspend.png"), url("/usr/local/share/wlogout/icons/suspend.png"));
+    border-radius: 0px 0px 0px 0px;
+    margin: 0px 0px 200px 200px;
+}
+
 #shutdown {
     background-image: image(url("/home/caseyw/.config/wlogout/icons/shutdown_white.png"), url("/usr/share/wlogout/icons/shutdown.png"), url("/usr/local/share/wlogout/icons/shutdown.png"));
     border-radius: 0px 60px 0px 0px;
