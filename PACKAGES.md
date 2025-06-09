@@ -87,6 +87,7 @@ sudo pacman -S \
 
 ```bash
 yay -S \
+  hyprland-git \
   hyprland-plugins \
   grimblast \
   wob \
@@ -102,6 +103,12 @@ sudo pacman -S papirus-icon-theme
 yay -S papirus-folders
 papirus-folders -C red --theme Papirus
 papirus-folders -C red --theme Papirus-Dark
+```
+
+## Step 4: HyprPM
+```bash
+hyprpm update
+hyprpm add https://github.com/KZDKM/Hyprspace
 ```
 
 ## Package Categories
