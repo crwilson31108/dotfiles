@@ -1,0 +1,615 @@
+@use "sass:color";
+@use "./osd/OSD.scss";
+
+// Catppuccin Mocha Colors
+$base: #1e1e2e;
+$mantle: #181825;
+$crust: #11111b;
+$surface0: #313244;
+$surface1: #45475a;
+$surface2: #585b70;
+$text: #cdd6f4;
+$subtext1: #bac2de;
+$subtext0: #a6adc8;
+$overlay2: #9399b2;
+$overlay1: #7f849c;
+$overlay0: #6c7086;
+$blue: #89b4fa;
+$lavender: #b4befe;
+$sapphire: #74c7ec;
+$sky: #89dceb;
+$teal: #94e2d5;
+$green: #a6e3a1;
+$yellow: #f9e2af;
+$peach: #fab387;
+$maroon: #eba0ac;
+$red: #f38ba8;
+$mauve: #cba6f7;
+$pink: #f5c2e7;
+$flamingo: #f2cdcd;
+$rosewater: #f5e0dc;
+
+* {
+    all: unset;
+    font-family: "Cantarell", "Font Awesome 6 Free", sans-serif;
+    font-size: 14px;
+}
+
+/* Remove test styles */
+
+// Common bar styles
+@mixin bar-common {
+    background-color: color.adjust($base, $alpha: -0.1);
+    color: $text;
+    
+    .bar-content {
+        padding: 0 10px;
+        min-height: 40px;
+    }
+}
+
+// Top Bar
+window.TopBar {
+    @include bar-common;
+    
+    .bar-content {
+        border-bottom: 2px solid color.adjust($surface0, $alpha: -0.2);
+    }
+    
+    // Left section
+    .left {
+        margin-left: 8px;
+        
+        .workspaces {
+            .workspace-btn {
+                min-width: 35px;
+                min-height: 35px;
+                margin: 5px 4px;
+                padding: 0 8px;
+                border-radius: 12px;
+                background-color: #313244;
+                color: #bac2de;
+                font-weight: bold;
+                font-size: 16px;
+                border: 2px solid transparent;
+                
+                &:hover {
+                    background-color: #89b4fa;
+                    color: #11111b;
+                }
+                
+                &.active {
+                    background-color: #f38ba8;
+                    color: #11111b;
+                    border: 2px solid #b4befe;
+                }
+            }
+        }
+    }
+    
+    // Center section
+    .center {
+        .clock-box {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, color.adjust($mauve, $alpha: -0.8), color.adjust($pink, $alpha: -0.8));
+            border: 2px solid color.adjust($mauve, $alpha: -0.5);
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(203, 166, 247, 0.2);
+            transition: all 0.3s ease;
+            
+            &:hover {
+                background: linear-gradient(135deg, color.adjust($mauve, $alpha: -0.6), color.adjust($pink, $alpha: -0.6));
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(203, 166, 247, 0.3);
+            }
+            
+            .clock {
+                font-weight: bold;
+                color: $mauve;
+                font-size: 15px;
+            }
+        }
+    }
+    
+    // Right section
+    .right {
+        margin-right: 16px;
+        
+        .brightness {
+            margin: 0 6px;
+            padding: 8px 14px;
+            background-color: $yellow;
+            border: 2px solid $peach;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            
+            icon {
+                margin-right: 8px;
+                font-size: 16px;
+                color: $crust;
+            }
+            
+            label {
+                min-width: 45px;
+                color: $crust;
+                font-weight: 600;
+            }
+            
+            &:hover {
+                background-color: $peach;
+                transform: translateY(-2px);
+            }
+        }
+        
+        .audio {
+            margin: 0 6px;
+            padding: 8px 14px;
+            background-color: $green;
+            border: 2px solid $teal;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            
+            icon {
+                margin-right: 8px;
+                font-size: 16px;
+                color: $crust;
+            }
+            
+            label {
+                min-width: 45px;
+                color: $crust;
+                font-weight: 600;
+            }
+            
+            &:hover {
+                background-color: $teal;
+                transform: translateY(-2px);
+            }
+        }
+        
+        .battery {
+            margin: 0 6px;
+            padding: 8px 14px;
+            background-color: $sky;
+            border: 2px solid $sapphire;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            
+            icon {
+                margin-right: 8px;
+                font-size: 16px;
+                color: $crust;
+            }
+            
+            label {
+                min-width: 45px;
+                color: $crust;
+                font-weight: 600;
+            }
+            
+            &:hover {
+                background-color: $sapphire;
+                transform: translateY(-2px);
+            }
+        }
+        
+        .power-button {
+            background-color: $red;
+            border: 2px solid $maroon;
+            color: $crust;
+            padding: 10px 16px;
+            margin-left: 12px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                background-color: $maroon;
+                color: $crust;
+                transform: translateY(-2px) scale(1.05);
+            }
+        }
+    }
+}
+
+// Bottom Bar
+window.BottomBar {
+    @include bar-common;
+    
+    .bar-content {
+        border-top: 2px solid color.adjust($surface0, $alpha: -0.2);
+    }
+    
+    // Left section
+    .left {
+        margin-left: 8px;
+        
+        .app-launcher {
+            background-color: $blue;
+            border: 2px solid $lavender;
+            color: $crust;
+            padding: 8px 18px;
+            border-radius: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                background-color: $lavender;
+                transform: translateY(-2px) scale(1.05);
+            }
+        }
+    }
+    
+    // Center section
+    .center {
+        .window-title {
+            color: $text;
+            font-weight: 500;
+            padding: 5px 15px;
+            background-color: color.adjust($surface0, $alpha: -0.5);
+            border-radius: 10px;
+            max-width: 600px;
+        }
+    }
+    
+    // Right section
+    .right {
+        margin-right: 8px;
+        
+        .systray {
+            margin: 0 10px;
+            
+            .tray-item {
+                padding: 5px;
+                margin: 0 2px;
+                
+                icon {
+                    font-size: 18px;
+                }
+                
+                &:hover {
+                    background-color: color.adjust($surface0, $alpha: -0.5);
+                    border-radius: 5px;
+                }
+            }
+        }
+        
+        .screenshot {
+            background: linear-gradient(135deg, color.adjust($green, $alpha: -0.8), color.adjust($teal, $alpha: -0.8));
+            border: 2px solid color.adjust($green, $alpha: -0.5);
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 0 6px;
+            transition: all 0.3s ease;
+            
+            icon {
+                font-size: 16px;
+                color: $green;
+            }
+            
+            &:hover {
+                background: linear-gradient(135deg, $green, $teal);
+                color: $crust;
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 6px 20px rgba(166, 227, 161, 0.4);
+            }
+        }
+        
+        .updates {
+            background: linear-gradient(135deg, $peach, $yellow);
+            border: 2px solid $peach;
+            color: $crust;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 0 6px;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 16px rgba(250, 179, 135, 0.3);
+            animation: update-pulse 3s ease-in-out infinite;
+            
+            &:hover {
+                background: linear-gradient(135deg, $yellow, $peach);
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 8px 24px rgba(250, 179, 135, 0.5);
+            }
+        }
+    }
+}
+
+// Animations
+@keyframes blink {
+    to {
+        background-color: $red;
+        color: $crust;
+    }
+}
+
+@keyframes pulse-active {
+    0% {
+        box-shadow: 0 8px 24px rgba(137, 180, 250, 0.5);
+    }
+    100% {
+        box-shadow: 0 12px 32px rgba(137, 180, 250, 0.8);
+    }
+}
+
+@keyframes update-pulse {
+    0%, 100% {
+        box-shadow: 0 4px 16px rgba(250, 179, 135, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 24px rgba(250, 179, 135, 0.6);
+    }
+}
+
+.urgent {
+    animation: blink 0.5s linear infinite alternate;
+}
+
+// OSD Styles
+window.OSD {
+    .osd-container {
+        background: rgba(17, 17, 27, 0.95);
+        border: 2px solid $surface0;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(20px);
+        min-width: 350px;
+        animation: osd-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        
+        .osd-content {
+            .osd-header {
+                margin-bottom: 20px;
+                spacing: 20px;
+                
+                .osd-icon {
+                    color: $blue;
+                    font-size: 48px;
+                }
+                
+                .osd-label {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: $text;
+                }
+                
+                .osd-text {
+                    spacing: 8px;
+                    
+                    .osd-title {
+                        font-size: 20px;
+                        font-weight: bold;
+                        color: $text;
+                    }
+                    
+                    .osd-body {
+                        font-size: 14px;
+                        color: $subtext1;
+                        opacity: 0.9;
+                    }
+                }
+            }
+            
+            .osd-progress {
+                spacing: 15px;
+                
+                .osd-progressbar {
+                    min-height: 8px;
+                    min-width: 250px;
+                    background-color: $surface0;
+                    border-radius: 4px;
+                    
+                    progress {
+                        background: linear-gradient(to right, $blue, $lavender);
+                        border-radius: 4px;
+                        min-height: 8px;
+                    }
+                }
+                
+                .osd-percentage {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: $text;
+                    min-width: 50px;
+                }
+            }
+        }
+    }
+}
+
+// Media OSD Styles
+window.MediaOSD {
+    .media-container {
+        background: rgba(17, 17, 27, 0.95);
+        border: 2px solid $surface0;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(20px);
+        min-width: 400px;
+        spacing: 20px;
+        animation: media-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        
+        .media-artwork {
+            .media-icon {
+                color: $mauve;
+                font-size: 64px;
+            }
+        }
+        
+        .media-content {
+            spacing: 15px;
+            
+            .media-info {
+                spacing: 5px;
+                
+                .media-title {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: $text;
+                }
+                
+                .media-artist {
+                    font-size: 14px;
+                    color: $subtext1;
+                }
+                
+                .media-album {
+                    font-size: 12px;
+                    color: $subtext0;
+                    font-style: italic;
+                }
+            }
+            
+            .media-controls {
+                spacing: 15px;
+                
+                .media-btn {
+                    min-width: 45px;
+                    min-height: 45px;
+                    border-radius: 50%;
+                    background-color: $surface0;
+                    color: $text;
+                    transition: all 0.2s ease;
+                    
+                    &:hover {
+                        background-color: $surface1;
+                        transform: scale(1.1);
+                    }
+                    
+                    &.play-pause {
+                        background: linear-gradient(135deg, $blue, $lavender);
+                        color: $crust;
+                        min-width: 55px;
+                        min-height: 55px;
+                        
+                        &:hover {
+                            background: linear-gradient(135deg, $lavender, $blue);
+                        }
+                    }
+                }
+            }
+            
+            .media-progress {
+                spacing: 10px;
+                
+                .media-time {
+                    font-size: 12px;
+                    color: $subtext1;
+                    min-width: 40px;
+                }
+                
+                .media-scale {
+                    background-color: $surface0;
+                    border-radius: 4px;
+                    min-height: 6px;
+                    
+                    slider {
+                        background: linear-gradient(135deg, $blue, $lavender);
+                        border-radius: 50%;
+                        min-width: 16px;
+                        min-height: 16px;
+                    }
+                    
+                    trough {
+                        background-color: $surface0;
+                        border-radius: 4px;
+                        min-height: 6px;
+                    }
+                    
+                    highlight {
+                        background: linear-gradient(to right, $blue, $lavender);
+                        border-radius: 4px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// OSD Animations
+@keyframes osd-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes media-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+
+// OSD Styles
+window.OSD {
+    // Center the window
+    .OSD {
+        margin: auto;
+    }
+
+    box.OSD {
+        border-radius: 40px;
+        background: rgba(17, 17, 27, 0.95);
+        border: 4px solid $surface0;
+        padding: 60px 80px;
+        margin: auto;
+        box-shadow: 0 16px 64px rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        min-width: 700px;
+        min-height: 180px;
+    }
+
+    icon {
+        font-size: 12rem;
+        color: $blue;
+        margin-right: 50px;
+    }
+
+    label {
+        font-size: 6rem;
+        font-weight: bold;
+        color: $text;
+        margin-left: 50px;
+        min-width: 160px;
+    }
+
+    levelbar {
+        min-width: 400px;
+        min-height: 30px;
+        
+        trough {
+            margin: 0 50px;
+            background-color: $surface0;
+            border-radius: 15px;
+            min-height: 30px;
+        }
+
+        block {
+            min-height: 30px;
+            background: linear-gradient(to right, $blue, $lavender);
+            border-radius: 15px;
+        }
+    }
+}
+
+// Tooltips
+tooltip {
+    background-color: $surface0;
+    color: $text;
+    border-radius: 5px;
+    padding: 5px;
+}
