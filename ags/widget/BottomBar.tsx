@@ -52,13 +52,25 @@ function Screenshot() {
 
 function UpdateChecker() {
     const updates = Variable<number>(0).poll(300000, ["bash", "-c", 
-        "checkupdates 2>/dev/null | wc -l"])
+        "count=$(($(checkupdates 2>/dev/null | wc -l) + $(yay -Qua 2>/dev/null | wc -l))); echo $count"])
+
+    const runUpdate = async () => {
+        try {
+            await execAsync(["alacritty", "-e", "bash", "-c", "yay -Syu; echo 'Press any key to exit...'; read -n 1"])
+            // Force refresh count after terminal closes
+            updates.startPoll()
+        } catch (error) {
+            console.log("Update process completed or cancelled")
+            // Force refresh even if process was cancelled
+            updates.startPoll()
+        }
+    }
 
     return <button
         className="updates"
-        visible={bind(updates).as(n => n > 0)}
-        onClicked={() => execAsync(["kitty", "-e", "yay", "-Syu"])}>
-        <label label={bind(updates).as(n => n > 0 ? `${n}` : "")} />
+        onClicked={runUpdate}>
+        <icon icon={bind(updates).as(n => n == 0 ? "emblem-checked-symbolic" : "package-x-generic-symbolic")} />
+        {bind(updates).as(n => n > 0 ? <label label={` ${n}`} /> : null)}
     </button>
 }
 
