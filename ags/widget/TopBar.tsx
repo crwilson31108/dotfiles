@@ -1,9 +1,10 @@
 import { Variable, GLib, bind } from "astal"
 import { Astal, Gtk, Gdk, App } from "astal/gtk3"
-import { execAsync } from "astal/process"
+import { exec, execAsync } from "astal/process"
 import Hyprland from "gi://AstalHyprland"
 import Wp from "gi://AstalWp"
 import Battery from "gi://AstalBattery"
+import Brightness from "../osd/brightness"
 
 function Workspaces() {
     const hypr = Hyprland.get_default()
@@ -42,30 +43,93 @@ function Clock() {
 function AudioSlider() {
     const speaker = Wp.get_default()?.audio.defaultSpeaker!
 
-    return <box className="audio">
-        <icon icon={bind(speaker, "volumeIcon")} />
-        <label label={bind(speaker, "volume").as(v => 
-            `${Math.round(v * 100)}%`
-        )} />
-    </box>
+    return <eventbox 
+        className="audio"
+        onScroll={(self, event) => {
+            if (event.delta_y > 0) {
+                // Scroll down = increase volume
+                speaker.volume = Math.min(speaker.volume + 0.05, 1.0)
+            } else if (event.delta_y < 0) {
+                // Scroll up = decrease volume
+                speaker.volume = Math.max(speaker.volume - 0.05, 0.0)
+            }
+        }}>
+        <button onClicked={() => {
+            speaker.mute = !speaker.mute
+        }}>
+            <box>
+                <icon icon={bind(speaker, "volumeIcon")} />
+                <label label={bind(speaker, "volume").as(v => 
+                    `${Math.round(v * 100)}%`
+                )} />
+            </box>
+        </button>
+    </eventbox>
 }
 
-function Brightness() {
-    return <box className="brightness">
-        <icon icon="display-brightness-symbolic" />
-        <label label="100%" />
-    </box>
+function BrightnessWidget() {
+    const brightness = Brightness.get_default()
+    const blueFilterActive = Variable(false)
+
+    return <eventbox 
+        className="brightness"
+        onScroll={(self, event) => {
+            if (event.delta_y > 0) {
+                // Scroll down = increase brightness
+                brightness.screen = Math.min(brightness.screen + 0.05, 1.0)
+            } else if (event.delta_y < 0) {
+                // Scroll up = decrease brightness
+                brightness.screen = Math.max(brightness.screen - 0.05, 0.0)
+            }
+        }}>
+        <button onClicked={() => {
+            blueFilterActive.set(!blueFilterActive.get())
+            if (blueFilterActive.get()) {
+                execAsync(["bash", "-c", "hyprctl keyword decoration:screen_shader ~/.config/hypr/shaders/blue-light-filter.glsl"])
+            } else {
+                execAsync(["bash", "-c", "hyprctl keyword decoration:screen_shader ''"])
+            }
+        }}>
+            <box>
+                <icon icon={bind(blueFilterActive).as(active => 
+                    active ? "night-light-symbolic" : "display-brightness-symbolic"
+                )} />
+                <label label={bind(brightness, "screen").as(b => 
+                    `${Math.round(b * 100)}%`
+                )} />
+            </box>
+        </button>
+    </eventbox>
 }
 
 function BatteryWidget() {
     const battery = Battery.get_default()
+    
+    const getTimeRemaining = () => {
+        if (!battery.isPresent) return ""
+        
+        if (battery.state === 1) { // Charging
+            const hoursLeft = battery.timeToFull / 3600
+            return `${Math.floor(hoursLeft)}h ${Math.floor((hoursLeft % 1) * 60)}m to full`
+        } else if (battery.state === 2) { // Discharging
+            const hoursLeft = battery.timeToEmpty / 3600
+            return `${Math.floor(hoursLeft)}h ${Math.floor((hoursLeft % 1) * 60)}m remaining`
+        }
+        return "Fully charged"
+    }
 
-    return <box className="battery" visible={bind(battery, "isPresent")}>
-        <icon icon={bind(battery, "batteryIconName")} />
-        <label label={bind(battery, "percentage").as(p =>
-            `${Math.floor(p * 100)}%`
-        )} />
-    </box>
+    return <button 
+        className="battery" 
+        visible={bind(battery, "isPresent")}
+        onClicked={() => execAsync(["bash", "-c", "gnome-power-statistics || xfce4-power-manager-settings || mate-power-statistics || kde-power-settings"])}
+        tooltipText={bind(battery, "state").as(() => getTimeRemaining())}>
+        <box>
+            <icon icon={bind(battery, "batteryIconName")} />
+            <label label={bind(battery, "percentage").as(p =>
+                `${Math.floor(p * 100)}%`
+            )} />
+        </box>
+    </button>
 }
 
 function PowerMenu() {
@@ -92,7 +156,7 @@ export default function TopBar(monitor: Gdk.Monitor) {
                 <Clock />
             </box>
             <box className="right" spacing={8} hexpand halign={Gtk.Align.END}>
-                <Brightness />
+                <BrightnessWidget />
                 <AudioSlider />
                 <BatteryWidget />
                 <PowerMenu />
