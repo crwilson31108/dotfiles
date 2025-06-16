@@ -137,6 +137,30 @@ window.TopBar {
             }
         }
         
+        .notification-indicator {
+            padding: 4px 8px;
+            background-color: rgba($mauve, 0.3);
+            color: $text;
+            border: 1px solid rgba($mauve, 0.5);
+            border-radius: 6px;
+            margin: 0 2px;
+            
+            &:hover {
+                background-color: rgba($mauve, 0.5);
+            }
+            
+            .notif-count {
+                margin-left: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                background: rgba($mauve, 0.8);
+                color: $base;
+                padding: 2px 6px;
+                border-radius: 10px;
+                min-width: 18px;
+            }
+        }
+        
         .power-button {
             padding: 4px 8px;
             background-color: rgba(243, 139, 168, 0.3);
@@ -149,6 +173,67 @@ window.TopBar {
             
             &:hover {
                 background-color: rgba(243, 139, 168, 0.5);
+            }
+        }
+    }
+}
+
+// Notification Center
+window.NotificationCenter {
+    background-color: rgba($base, 0.95);
+    border: 1px solid rgba($surface0, 0.8);
+    border-radius: 12px;
+    
+    .notification-center {
+        padding: 16px;
+        min-width: 400px;
+        min-height: 600px;
+    }
+    
+    .notif-header {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba($surface0, 0.5);
+        
+        .clear-all-btn {
+            background: rgba($red, 0.2);
+            border: 1px solid rgba($red, 0.4);
+            border-radius: 6px;
+            padding: 4px 12px;
+            color: $text;
+            
+            &:hover {
+                background: rgba($red, 0.3);
+            }
+        }
+    }
+    
+    .notification-item {
+        background: rgba($surface0, 0.6);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: rgba($surface1, 0.6);
+            border-color: rgba($overlay0, 0.3);
+        }
+        
+        &.urgent {
+            border-left: 3px solid $yellow;
+        }
+        
+        .notif-dismiss {
+            background: rgba($red, 0.2);
+            border: none;
+            border-radius: 4px;
+            padding: 4px;
+            margin-left: 8px;
+            
+            &:hover {
+                background: rgba($red, 0.4);
             }
         }
     }

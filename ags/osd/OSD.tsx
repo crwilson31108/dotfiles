@@ -10,6 +10,10 @@ function OnScreenProgress({ visible }: { visible: Variable<boolean> }) {
 
     const iconName = Variable("")
     const value = Variable(0)
+    
+    // Track if this is the initial load to suppress OSD
+    let brightnessInitialized = false
+    let volumeInitialized = false
 
     let count = 0
     function show(v: number, icon: string) {
@@ -26,14 +30,22 @@ function OnScreenProgress({ visible }: { visible: Variable<boolean> }) {
     return (
         <revealer
             setup={(self) => {
-                self.hook(brightness, "notify::screen", () =>
-                    show(brightness.screen, "display-brightness-symbolic"),
-                )
+                self.hook(brightness, "notify::screen", () => {
+                    if (brightnessInitialized) {
+                        show(brightness.screen, "display-brightness-symbolic")
+                    } else {
+                        brightnessInitialized = true
+                    }
+                })
 
                 if (speaker) {
-                    self.hook(speaker, "notify::volume", () =>
-                        show(speaker.volume, speaker.volumeIcon),
-                    )
+                    self.hook(speaker, "notify::volume", () => {
+                        if (volumeInitialized) {
+                            show(speaker.volume, speaker.volumeIcon)
+                        } else {
+                            volumeInitialized = true
+                        }
+                    })
                 }
             }}
             revealChild={visible()}

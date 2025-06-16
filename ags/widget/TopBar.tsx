@@ -5,6 +5,7 @@ import Hyprland from "gi://AstalHyprland"
 import Wp from "gi://AstalWp"
 import Battery from "gi://AstalBattery"
 import Brightness from "../osd/brightness"
+import Notifd from "gi://AstalNotifd"
 
 function Workspaces() {
     const hypr = Hyprland.get_default()
@@ -31,13 +32,15 @@ function Clock() {
     const time = Variable<string>("").poll(1000, () =>
         GLib.DateTime.new_now_local().format("%Y-%m-%d  %I:%M %p")!)
 
-    return <box className="clock-box">
+    return <button 
+        className="clock-box"
+        onClicked={() => execAsync(["gnome-calendar"])}>
         <label
             className="clock"
             onDestroy={() => time.drop()}
             label={time()}
         />
-    </box>
+    </button>
 }
 
 function AudioSlider() {
@@ -132,6 +135,35 @@ function BatteryWidget() {
     </button>
 }
 
+function NotificationIndicator() {
+    const notifyd = Notifd.get_default()
+    const count = Variable(0)
+    
+    // Update count when notifications change
+    const updateCount = () => {
+        count.set(notifyd.get_notifications().length)
+    }
+    
+    notifyd.connect("notified", updateCount)
+    notifyd.connect("resolved", updateCount)
+    updateCount()
+    
+    return <button
+        className="notification-indicator"
+        onClicked={() => {
+            App.toggle_window("NotificationCenter")
+        }}>
+        <box>
+            <icon icon="notification-symbolic" />
+            <label 
+                className="notif-count"
+                visible={bind(count).as(c => c > 0)}
+                label={bind(count).as(c => c.toString())} 
+            />
+        </box>
+    </button>
+}
+
 function PowerMenu() {
     return <button
         className="power-button"
@@ -159,6 +191,7 @@ export default function TopBar(monitor: Gdk.Monitor) {
                 <BrightnessWidget />
                 <AudioSlider />
                 <BatteryWidget />
+                <NotificationIndicator />
                 <PowerMenu />
             </box>
         </centerbox>
