@@ -1,17 +1,31 @@
 configuration {
     modi: "drun,run,window";
-    icon-theme: "Oranchelo";
+    icon-theme: "Papirus";
     show-icons: true;
-    terminal: "kitty";
+    terminal: "alacritty";
     drun-display-format: "{icon} {name}";
     location: 0;
     disable-history: false;
-    hide-scrollbar: true;
+    hide-scrollbar: false;
     display-drun: "   Apps ";
     display-run: "   Run ";
-    display-window: " 﩯  Window";
+    display-window: " 󰍉  Window";
     display-Network: " 󰤨  Network";
     sidebar-mode: true;
+    
+    /* Performance and behavior */
+    matching: "fuzzy";
+    sort: true;
+    sorting-method: "fzf";
+    no-levenshtein-sort: true;
+    
+    /* Keybindings */
+    kb-row-up: "Up,Control+p";
+    kb-row-down: "Down,Control+n";
+    kb-accept-entry: "Control+m,Return,KP_Enter";
+    kb-remove-to-eol: "Control+Shift+k";
+    kb-mode-next: "Shift+Right,Control+Tab";
+    kb-mode-previous: "Shift+Left,Control+Shift+Tab";
 }
 
-@theme "catppuccin-mocha"
+@theme "polished-mocha"

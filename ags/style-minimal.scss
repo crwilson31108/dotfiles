@@ -323,6 +323,34 @@ window.BottomBar {
             }
         }
         
+        .clipboard {
+            padding: 4px 8px;
+            background-color: rgba(137, 180, 250, 0.3);
+            color: #cdd6f4;
+            border: 1px solid rgba(137, 180, 250, 0.5);
+            border-radius: 6px;
+            margin: 0 2px;
+            font-weight: normal;
+            
+            &:hover {
+                background-color: rgba(137, 180, 250, 0.5);
+            }
+        }
+        
+        .emoji {
+            padding: 4px 8px;
+            background-color: rgba(250, 179, 135, 0.3);
+            color: #cdd6f4;
+            border: 1px solid rgba(250, 179, 135, 0.5);
+            border-radius: 6px;
+            margin: 0 2px;
+            font-weight: normal;
+            
+            &:hover {
+                background-color: rgba(250, 179, 135, 0.5);
+            }
+        }
+        
         .screenshot {
             padding: 4px 8px;
             background-color: rgba(203, 166, 247, 0.3);
@@ -334,6 +362,20 @@ window.BottomBar {
             
             &:hover {
                 background-color: rgba(203, 166, 247, 0.5);
+            }
+        }
+        
+        .colorpicker {
+            padding: 4px 8px;
+            background-color: rgba(245, 224, 220, 0.3);
+            color: #cdd6f4;
+            border: 1px solid rgba(245, 224, 220, 0.5);
+            border-radius: 6px;
+            margin: 0 2px;
+            font-weight: normal;
+            
+            &:hover {
+                background-color: rgba(245, 224, 220, 0.5);
             }
         }
     }

@@ -1,0 +1,8 @@
+allow_images=true
+hide_scroll=false
+no_actions=false
+term=alacritty
+mode=drun
+insensitive=true
+width=600
+height=400

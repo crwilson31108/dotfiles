@@ -1,0 +1,23 @@
+# Rofimoji Configuration
+# Sane defaults for a clean emoji picking experience with searchability
+
+# Action: Copy to clipboard by default
+action = copy
+
+# Files: Only load emojis (not all Unicode blocks)
+files = [emojis]
+
+# Skin tone: Use neutral by default
+skin-tone = neutral
+
+# Disable recently used characters (clean interface)
+max-recent = 0
+
+# Disable frequency-based sorting (alphabetical order)
+no-frecency = True
+
+# Show descriptions for searchability (you can search by emoji name/keywords)
+hidden-descriptions = False
+
+# Prompt
+prompt = 😀

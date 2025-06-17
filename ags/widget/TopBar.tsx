@@ -72,7 +72,14 @@ function AudioSlider() {
 
 function BrightnessWidget() {
     const brightness = Brightness.get_default()
-    const blueFilterActive = Variable(false)
+    const sunsetActive = Variable(false).poll(1000, () => {
+        try {
+            exec("pgrep hyprsunset")
+            return true
+        } catch {
+            return false
+        }
+    })
 
     return <eventbox 
         className="brightness"
@@ -86,15 +93,10 @@ function BrightnessWidget() {
             }
         }}>
         <button onClicked={() => {
-            blueFilterActive.set(!blueFilterActive.get())
-            if (blueFilterActive.get()) {
-                execAsync(["bash", "-c", "hyprctl keyword decoration:screen_shader ~/.config/hypr/shaders/blue-light-filter.glsl"])
-            } else {
-                execAsync(["bash", "-c", "hyprctl keyword decoration:screen_shader ''"])
-            }
+            execAsync(["bash", "-c", "pkill hyprsunset || hyprsunset -t 4000"])
         }}>
             <box>
-                <icon icon={bind(blueFilterActive).as(active => 
+                <icon icon={bind(sunsetActive).as(active => 
                     active ? "night-light-symbolic" : "display-brightness-symbolic"
                 )} />
                 <label label={bind(brightness, "screen").as(b => 

@@ -50,6 +50,30 @@ function Screenshot() {
     </button>
 }
 
+function ClipboardManager() {
+    return <button
+        className="clipboard"
+        onClicked={() => execAsync(["bash", "-c", "cliphist list | rofi -dmenu | cliphist decode | wl-copy"])}>
+        <icon icon="edit-paste-symbolic" />
+    </button>
+}
+
+function EmojiPicker() {
+    return <button
+        className="emoji"
+        onClicked={() => execAsync(["rofimoji"])}>
+        <icon icon="face-smile-symbolic" />
+    </button>
+}
+
+function ColorPicker() {
+    return <button
+        className="colorpicker"
+        onClicked={() => execAsync(["hyprpicker", "-a"])}>
+        <icon icon="color-select-symbolic" />
+    </button>
+}
+
 function UpdateChecker() {
     const updates = Variable<number>(0).poll(300000, ["bash", "-c", 
         "count=$(($(checkupdates 2>/dev/null | wc -l) + $(yay -Qua 2>/dev/null | wc -l))); echo $count"])
@@ -91,6 +115,9 @@ export default function BottomBar(monitor: Gdk.Monitor) {
             </box>
             <box className="right" hexpand halign={Gtk.Align.END}>
                 <SysTray />
+                <ClipboardManager />
+                <EmojiPicker />
+                <ColorPicker />
                 <Screenshot />
                 <UpdateChecker />
             </box>

@@ -1,137 +1,275 @@
-/* Catppuccin Mocha Colors */
-@define-color base #1e1e2e;
-@define-color surface0 #313244;
-@define-color surface1 #45475a;
-@define-color text #cdd6f4;
-@define-color subtext1 #bac2de;
-@define-color blue #89b4fa;
-@define-color pink #f5c2e7;
-@define-color mauve #cba6f7;
-@define-color red #f38ba8;
-@define-color green #a6e3a1;
-@define-color teal #94e2d5;
-@define-color yellow #f9e2af;
+window.OSD box.OSD {
+  border-radius: 100px;
+  background-color: @theme_bg_color;
+  padding: 13px 20px;
+  margin: 13px;
+  box-shadow: 3px 3px 7px 0 rgba(0, 0, 0, 0.4);
+}
+window.OSD icon {
+  font-size: 2.5rem;
+}
+window.OSD label {
+  font-size: 1.5rem;
+}
+window.OSD levelbar trough {
+  margin: 1 0.6rem;
+}
+window.OSD levelbar block {
+  min-height: 1.5rem;
+}
 
 * {
-    font-family: "JetBrainsMono Nerd Font", monospace;
-    font-size: 13px;
+  font-family: "Cantarell", "Font Awesome 6 Free", sans-serif;
+  font-size: 14px;
 }
 
-/* Top Bar */
-.top-bar {
-    background-color: alpha(@base, 0.9);
-    padding: 4px 16px;
-    border-radius: 0;
-    border-bottom: 2px solid alpha(@surface0, 0.8);
+window.TopBar {
+  background-color: rgba(30, 30, 46, 0.95);
+  color: #cdd6f4;
+}
+window.TopBar .bar-content {
+  padding: 0 8px;
+  min-height: 28px;
+  border-bottom: 1px solid rgba(49, 50, 68, 0.6);
+}
+window.TopBar .left {
+  margin-left: 6px;
+}
+window.TopBar .left .workspaces .workspace-btn {
+  min-width: 28px;
+  min-height: 24px;
+  margin: 2px 3px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background-color: #313244;
+  color: #bac2de;
+  font-weight: normal;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+window.TopBar .left .workspaces .workspace-btn:hover {
+  background-color: #45475a;
+  color: #cdd6f4;
+}
+window.TopBar .left .workspaces .workspace-btn.active {
+  background-color: #585b70;
+  color: #cdd6f4;
+  border: 1px solid #6c7086;
+}
+window.TopBar .center .clock-box {
+  padding: 4px 12px;
+  background-color: rgba(49, 50, 68, 0.8);
+  border: 1px solid rgba(88, 91, 112, 0.5);
+  border-radius: 8px;
+  color: #cdd6f4;
+  font-weight: normal;
+}
+window.TopBar .center .clock-box:hover {
+  background-color: rgba(69, 71, 90, 0.8);
+}
+window.TopBar .right {
+  margin-right: 6px;
+}
+window.TopBar .right .brightness {
+  padding: 4px 8px;
+  background-color: rgba(249, 226, 175, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(249, 226, 175, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+}
+window.TopBar .right .brightness:hover {
+  background-color: rgba(249, 226, 175, 0.5);
+}
+window.TopBar .right .audio {
+  padding: 4px 8px;
+  background-color: rgba(137, 180, 250, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(137, 180, 250, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+}
+window.TopBar .right .audio:hover {
+  background-color: rgba(137, 180, 250, 0.5);
+}
+window.TopBar .right .battery {
+  padding: 4px 8px;
+  background-color: rgba(166, 227, 161, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(166, 227, 161, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+}
+window.TopBar .right .battery:hover {
+  background-color: rgba(166, 227, 161, 0.5);
+}
+window.TopBar .right .notification-indicator {
+  padding: 4px 8px;
+  background-color: rgba(203, 166, 247, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(203, 166, 247, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+}
+window.TopBar .right .notification-indicator:hover {
+  background-color: rgba(203, 166, 247, 0.5);
+}
+window.TopBar .right .notification-indicator .notif-count {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background: rgba(203, 166, 247, 0.8);
+  color: #1e1e2e;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+}
+window.TopBar .right .power-profile {
+  padding: 4px 8px;
+  background-color: rgba(116, 199, 236, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(116, 199, 236, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+}
+window.TopBar .right .power-profile:hover {
+  background-color: rgba(116, 199, 236, 0.5);
+}
+window.TopBar .right .power-button {
+  padding: 4px 8px;
+  background-color: rgba(243, 139, 168, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(243, 139, 168, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+  font-size: 14px;
+}
+window.TopBar .right .power-button:hover {
+  background-color: rgba(243, 139, 168, 0.5);
 }
 
-.launcher {
-    background-color: @mauve;
-    color: @base;
-    border-radius: 12px;
-    padding: 8px 12px;
-    font-size: 18px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+window.NotificationCenter {
+  background-color: rgba(30, 30, 46, 0.95);
+  border: 1px solid rgba(49, 50, 68, 0.8);
+  border-radius: 12px;
+}
+window.NotificationCenter .notification-center {
+  padding: 16px;
+  min-width: 400px;
+  min-height: 600px;
+}
+window.NotificationCenter .notif-header {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(49, 50, 68, 0.5);
+}
+window.NotificationCenter .notif-header .clear-all-btn {
+  background: rgba(243, 139, 168, 0.2);
+  border: 1px solid rgba(243, 139, 168, 0.4);
+  border-radius: 6px;
+  padding: 4px 12px;
+  color: #cdd6f4;
+}
+window.NotificationCenter .notif-header .clear-all-btn:hover {
+  background: rgba(243, 139, 168, 0.3);
+}
+window.NotificationCenter .notification-item {
+  background: rgba(49, 50, 68, 0.6);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+window.NotificationCenter .notification-item:hover {
+  background: rgba(69, 71, 90, 0.6);
+  border-color: rgba(108, 112, 134, 0.3);
+}
+window.NotificationCenter .notification-item.urgent {
+  border-left: 3px solid #f9e2af;
+}
+window.NotificationCenter .notification-item .notif-dismiss {
+  background: rgba(243, 139, 168, 0.2);
+  border: none;
+  border-radius: 4px;
+  padding: 4px;
+  margin-left: 8px;
+}
+window.NotificationCenter .notification-item .notif-dismiss:hover {
+  background: rgba(243, 139, 168, 0.4);
 }
 
-.launcher:hover {
-    background-color: @pink;
-    box-shadow: 0 4px 12px alpha(@pink, 0.4);
-    transform: translateY(-1px);
+window.BottomBar {
+  background-color: rgba(30, 30, 46, 0.95);
+  color: #cdd6f4;
+}
+window.BottomBar .bar-content {
+  padding: 0 8px;
+  min-height: 28px;
+  border-top: 1px solid rgba(49, 50, 68, 0.6);
+}
+window.BottomBar .left {
+  margin-left: 6px;
+}
+window.BottomBar .left .app-launcher {
+  padding: 4px 12px;
+  background-color: rgba(180, 190, 254, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(180, 190, 254, 0.5);
+  border-radius: 8px;
+  font-weight: normal;
+}
+window.BottomBar .left .app-launcher:hover {
+  background-color: rgba(180, 190, 254, 0.5);
+}
+window.BottomBar .center .window-title {
+  padding: 4px 12px;
+  background-color: rgba(49, 50, 68, 0.8);
+  border: 1px solid rgba(88, 91, 112, 0.5);
+  border-radius: 8px;
+  color: #cdd6f4;
+  font-weight: normal;
+}
+window.BottomBar .right {
+  margin-right: 6px;
+}
+window.BottomBar .right .systray {
+  padding: 4px 8px;
+  background-color: rgba(49, 50, 68, 0.8);
+  border: 1px solid rgba(88, 91, 112, 0.5);
+  border-radius: 6px;
+}
+window.BottomBar .right .systray:hover {
+  background-color: rgba(69, 71, 90, 0.8);
+}
+window.BottomBar .right .updates {
+  padding: 4px 8px;
+  background-color: rgba(166, 227, 161, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(166, 227, 161, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+}
+window.BottomBar .right .updates:hover {
+  background-color: rgba(166, 227, 161, 0.5);
+}
+window.BottomBar .right .screenshot {
+  padding: 4px 8px;
+  background-color: rgba(203, 166, 247, 0.3);
+  color: #cdd6f4;
+  border: 1px solid rgba(203, 166, 247, 0.5);
+  border-radius: 6px;
+  margin: 0 2px;
+  font-weight: normal;
+}
+window.BottomBar .right .screenshot:hover {
+  background-color: rgba(203, 166, 247, 0.5);
 }
 
-.clock {
-    color: @text;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 4px 12px;
-    background-color: alpha(@surface0, 0.5);
-    border-radius: 16px;
-}
-
-/* Bottom Bar */
-.bottom-bar {
-    background-color: alpha(@base, 0.9);
-    padding: 4px 16px;
-    border-radius: 0;
-    border-top: 2px solid alpha(@surface0, 0.8);
-}
-
-.workspaces {
-    padding: 2px 4px;
-    background-color: alpha(@surface0, 0.3);
-    border-radius: 16px;
-}
-
-.workspace-btn {
-    min-width: 32px;
-    min-height: 32px;
-    border-radius: 50%;
-    margin: 0 2px;
-    background-color: transparent;
-    color: @subtext1;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.workspace-btn:hover {
-    background-color: alpha(@surface1, 0.6);
-    color: @text;
-}
-
-.workspace-btn.active {
-    background-color: @blue;
-    color: @base;
-    box-shadow: 0 2px 8px alpha(@blue, 0.4);
-}
-
-.window-title {
-    color: @subtext1;
-    padding: 4px 16px;
-    background-color: alpha(@surface0, 0.3);
-    border-radius: 16px;
-    font-style: italic;
-}
-
-.power-menu {
-    background-color: @red;
-    color: @base;
-    border-radius: 12px;
-    padding: 8px 12px;
-    font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.power-menu:hover {
-    background-color: lighten(@red, 10%);
-    box-shadow: 0 4px 12px alpha(@red, 0.4);
-    transform: translateY(-1px);
-}
-
-/* System Tray */
-.systray-item {
-    padding: 4px;
-    margin: 0 2px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-}
-
-.systray-item:hover {
-    background-color: alpha(@surface0, 0.5);
-}
-
-/* Animations */
-window {
-    animation: slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slide-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/*# sourceMappingURL=style.css.map */
