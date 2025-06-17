@@ -161,6 +161,20 @@ window.TopBar {
             }
         }
         
+        .power-profile {
+            padding: 4px 8px;
+            background-color: rgba($sapphire, 0.3);
+            color: $text;
+            border: 1px solid rgba($sapphire, 0.5);
+            border-radius: 6px;
+            margin: 0 2px;
+            font-weight: normal;
+            
+            &:hover {
+                background-color: rgba($sapphire, 0.5);
+            }
+        }
+        
         .power-button {
             padding: 4px 8px;
             background-color: rgba(243, 139, 168, 0.3);

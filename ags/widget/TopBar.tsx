@@ -164,6 +164,38 @@ function NotificationIndicator() {
     </button>
 }
 
+function PowerProfileWidget() {
+    const currentProfile = Variable("balanced").poll(2000, () => 
+        exec("bash -c \"powerprofilesctl get\"").trim()
+    )
+    
+    const profiles = ["power-saver", "balanced", "performance"]
+    const profileIcons = {
+        "power-saver": "power-profile-power-saver-symbolic",
+        "balanced": "power-profile-balanced-symbolic", 
+        "performance": "power-profile-performance-symbolic"
+    }
+    
+    const nextProfile = (current: string) => {
+        const index = profiles.indexOf(current)
+        return profiles[(index + 1) % profiles.length]
+    }
+    
+    return <button
+        className="power-profile"
+        tooltipText={bind(currentProfile).as(p => `Power Profile: ${p}`)}
+        onClicked={() => {
+            const next = nextProfile(currentProfile.get())
+            execAsync(["powerprofilesctl", "set", next]).then(() => {
+                currentProfile.set(next)
+            })
+        }}>
+        <icon icon={bind(currentProfile).as(p => 
+            profileIcons[p as keyof typeof profileIcons] || "applications-system-symbolic"
+        )} />
+    </button>
+}
+
 function PowerMenu() {
     return <button
         className="power-button"
@@ -188,6 +220,7 @@ export default function TopBar(monitor: Gdk.Monitor) {
                 <Clock />
             </box>
             <box className="right" spacing={8} hexpand halign={Gtk.Align.END}>
+                <PowerProfileWidget />
                 <BrightnessWidget />
                 <AudioSlider />
                 <BatteryWidget />
