@@ -5,7 +5,6 @@ import Hyprland from "gi://AstalHyprland"
 import Wp from "gi://AstalWp"
 import Battery from "gi://AstalBattery"
 import Brightness from "../osd/brightness"
-import Notifd from "gi://AstalNotifd"
 
 function Workspaces() {
     const hypr = Hyprland.get_default()
@@ -137,34 +136,7 @@ function BatteryWidget() {
     </button>
 }
 
-function NotificationIndicator() {
-    const notifyd = Notifd.get_default()
-    const count = Variable(0)
-    
-    // Update count when notifications change
-    const updateCount = () => {
-        count.set(notifyd.get_notifications().length)
-    }
-    
-    notifyd.connect("notified", updateCount)
-    notifyd.connect("resolved", updateCount)
-    updateCount()
-    
-    return <button
-        className="notification-indicator"
-        onClicked={() => {
-            App.toggle_window("NotificationCenter")
-        }}>
-        <box>
-            <icon icon="notification-symbolic" />
-            <label 
-                className="notif-count"
-                visible={bind(count).as(c => c > 0)}
-                label={bind(count).as(c => c.toString())} 
-            />
-        </box>
-    </button>
-}
+
 
 function PowerProfileWidget() {
     const currentProfile = Variable("balanced").poll(2000, () => 
@@ -201,7 +173,7 @@ function PowerProfileWidget() {
 function PowerMenu() {
     return <button
         className="power-button"
-        onClicked={() => execAsync(["bash", "-c", "~/.config/waybar/scripts/power-menu.sh"])}>
+        onClicked={() => execAsync(["bash", "-c", "~/.config/ags/scripts/power-menu.sh"])}>
         <label label="⏻" />
     </button>
 }
@@ -226,7 +198,6 @@ export default function TopBar(monitor: Gdk.Monitor) {
                 <BrightnessWidget />
                 <AudioSlider />
                 <BatteryWidget />
-                <NotificationIndicator />
                 <PowerMenu />
             </box>
         </centerbox>

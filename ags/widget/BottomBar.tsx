@@ -7,7 +7,8 @@ import Tray from "gi://AstalTray"
 function AppLauncher() {
     return <button
         className="app-launcher"
-        onClicked={() => execAsync(["rofi", "-show", "drun"])}>
+        onClicked={() => execAsync(["rofi", "-show", "drun"])}
+        tooltipText="Application Launcher">
         <label label="≡" />
     </button>
 }
@@ -42,36 +43,52 @@ function SysTray() {
     </box>
 }
 
-function Screenshot() {
-    return <button
-        className="screenshot"
-        onClicked={() => execAsync(["bash", "-c", "grim -g \"$(slurp)\""])}>
-        <icon icon="camera-photo-symbolic" />
-    </button>
-}
+function UtilityButtons() {
+    const expanded = Variable(false)
 
-function ClipboardManager() {
-    return <button
-        className="clipboard"
-        onClicked={() => execAsync(["bash", "-c", "cliphist list | rofi -dmenu | cliphist decode | wl-copy"])}>
-        <icon icon="edit-paste-symbolic" />
-    </button>
-}
+    const toggleExpanded = () => {
+        expanded.set(!expanded.get())
+    }
 
-function EmojiPicker() {
-    return <button
-        className="emoji"
-        onClicked={() => execAsync(["rofimoji"])}>
-        <icon icon="face-smile-symbolic" />
-    </button>
-}
-
-function ColorPicker() {
-    return <button
-        className="colorpicker"
-        onClicked={() => execAsync(["hyprpicker", "-a"])}>
-        <icon icon="color-select-symbolic" />
-    </button>
+    return <box className="utility-container">
+        <revealer
+            transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+            revealChild={bind(expanded)}
+            className="utility-revealer">
+            <box className="utility-buttons">
+                <button
+                    className="utility-btn clipboard"
+                    onClicked={() => execAsync(["bash", "-c", "cliphist list | rofi -dmenu | cliphist decode | wl-copy"])}
+                    tooltipText="Clipboard History">
+                    <icon icon="edit-paste-symbolic" />
+                </button>
+                <button
+                    className="utility-btn emoji"
+                    onClicked={() => execAsync(["rofimoji"])}
+                    tooltipText="Emoji Picker">
+                    <icon icon="face-smile-symbolic" />
+                </button>
+                <button
+                    className="utility-btn colorpicker"
+                    onClicked={() => execAsync(["hyprpicker", "-a"])}
+                    tooltipText="Color Picker">
+                    <icon icon="color-select-symbolic" />
+                </button>
+                <button
+                    className="utility-btn screenshot"
+                    onClicked={() => execAsync(["bash", "-c", "grim -g \"$(slurp)\""])}
+                    tooltipText="Screenshot">
+                    <icon icon="camera-photo-symbolic" />
+                </button>
+            </box>
+        </revealer>
+        <button
+            className={bind(expanded).as(e => e ? "utility-toggle expanded" : "utility-toggle")}
+            onClicked={toggleExpanded}
+            tooltipText={bind(expanded).as(e => e ? "Hide Utilities" : "Show Utilities")}>
+            <icon icon={bind(expanded).as(e => e ? "pan-end-symbolic" : "pan-start-symbolic")} />
+        </button>
+    </box>
 }
 
 function UpdateChecker() {
@@ -81,20 +98,21 @@ function UpdateChecker() {
     const runUpdate = async () => {
         try {
             await execAsync(["alacritty", "-e", "bash", "-c", "yay -Syu; echo 'Press any key to exit...'; read -n 1"])
-            // Force refresh count after terminal closes
             updates.startPoll()
         } catch (error) {
             console.log("Update process completed or cancelled")
-            // Force refresh even if process was cancelled
             updates.startPoll()
         }
     }
 
     return <button
-        className="updates"
-        onClicked={runUpdate}>
-        <icon icon={bind(updates).as(n => n == 0 ? "emblem-checked-symbolic" : "package-x-generic-symbolic")} />
-        {bind(updates).as(n => n > 0 ? <label label={` ${n}`} /> : null)}
+        className={bind(updates).as(n => n > 0 ? "updates has-updates" : "updates")}
+        onClicked={runUpdate}
+        tooltipText={bind(updates).as(n => n == 0 ? "System is up to date" : `${n} updates available`)}>
+        <box>
+            <icon icon={bind(updates).as(n => n == 0 ? "emblem-checked-symbolic" : "software-update-available-symbolic")} />
+            {bind(updates).as(n => n > 0 ? <label label={` ${n}`} className="update-count" /> : null)}
+        </box>
     </button>
 }
 
@@ -114,11 +132,8 @@ export default function BottomBar(monitor: Gdk.Monitor) {
                 <WindowTitle />
             </box>
             <box className="right" hexpand halign={Gtk.Align.END}>
+                <UtilityButtons />
                 <SysTray />
-                <ClipboardManager />
-                <EmojiPicker />
-                <ColorPicker />
-                <Screenshot />
                 <UpdateChecker />
             </box>
         </centerbox>
