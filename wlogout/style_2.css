@@ -10,7 +10,7 @@
 }
 
 window {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: transparent;
 }
 
 button {
@@ -23,8 +23,13 @@ button {
     background-position: center;
     background-size: 10%;
     border-radius: 0px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     text-shadow: none;
+}
+
+button:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
 }
 
 button:hover {
@@ -35,52 +40,46 @@ button:hover {
     color: rgba(30, 30, 46, 1);
 }
 
-button:hover#lock {
-    border-radius: 25px 25px 0px 25px;
-    margin: 184px 0px 0px 184px;
-}
-
-button:hover#logout {
-    border-radius: 25px 25px 0px 25px;
-    margin: 184px 0px 0px 184px;
-}
-
-button:hover#shutdown {
-    border-radius: 25px 25px 25px 0px;
-    margin: 184px 184px 0px 0px;
-}
-
-button:hover#reboot {
-    border-radius: 0px 25px 25px 25px;
-    margin: 0px 184px 184px 0px;
-}
-
-#lock {
-    background-image: image(url("/home/caseyw/.config/wlogout/icons/lock_white.png"), url("/usr/share/wlogout/icons/lock.png"), url("/usr/local/share/wlogout/icons/lock.png"));
-    border-radius: 60px 0px 0px 0px;
-    margin: 200px 0px 0px 200px;
-}
-
 #logout {
-    background-image: image(url("/home/caseyw/.config/wlogout/icons/logout_white.png"), url("/usr/share/wlogout/icons/logout.png"), url("/usr/local/share/wlogout/icons/logout.png"));
-    border-radius: 60px 0px 0px 0px;
+    border-radius: 40px 0px 0px 0px; /* top-left */
     margin: 200px 0px 0px 200px;
-}
-
-#suspend {
-    background-image: image(url("$HOME/.config/wlogout/icons/suspend_white.png"), url("/usr/share/wlogout/icons/suspend.png"), url("/usr/local/share/wlogout/icons/suspend.png"));
-    border-radius: 0px 0px 0px 0px;
-    margin: 0px 0px 200px 200px;
+    background-image: image(url("/home/caseyw/.config/wlogout/icons/logout_white.png"), url("/usr/share/wlogout/icons/logout.png"), url("/usr/local/share/wlogout/icons/logout.png"));
 }
 
 #shutdown {
-    background-image: image(url("/home/caseyw/.config/wlogout/icons/shutdown_white.png"), url("/usr/share/wlogout/icons/shutdown.png"), url("/usr/local/share/wlogout/icons/shutdown.png"));
-    border-radius: 0px 60px 0px 0px;
+    border-radius: 0px 40px 0px 0px; /* top-right */
     margin: 200px 200px 0px 0px;
+    background-image: image(url("/home/caseyw/.config/wlogout/icons/shutdown_white.png"), url("/usr/share/wlogout/icons/shutdown.png"), url("/usr/local/share/wlogout/icons/shutdown.png"));
+}
+
+#suspend {
+    border-radius: 0px 0px 0px 40px; /* bottom-left */
+    margin: 0px 0px 200px 200px;
+    background-image: image(url("/home/caseyw/.config/wlogout/icons/suspend_white.png"), url("/usr/share/wlogout/icons/suspend.png"), url("/usr/local/share/wlogout/icons/suspend.png"));
 }
 
 #reboot {
-    background-image: image(url("/home/caseyw/.config/wlogout/icons/reboot_white.png"), url("/usr/share/wlogout/icons/reboot.png"), url("/usr/local/share/wlogout/icons/reboot.png"));
-    border-radius: 0px 0px 60px 0px;
+    border-radius: 0px 0px 40px 0px; /* bottom-right */
     margin: 0px 200px 200px 0px;
+    background-image: image(url("/home/caseyw/.config/wlogout/icons/reboot_white.png"), url("/usr/share/wlogout/icons/reboot.png"), url("/usr/local/share/wlogout/icons/reboot.png"));
+}
+
+button:hover#logout {
+    border-radius: 60px 0px 0px 0px;
+}
+
+button:hover#shutdown {
+    border-radius: 0px 60px 0px 0px;
+}
+
+button:hover#suspend {
+    border-radius: 0px 0px 0px 60px;
+}
+
+button:hover#reboot {
+    border-radius: 0px 0px 60px 0px;
+}
+
+button {
+    transition: border-radius 0.2s ease;
 }
