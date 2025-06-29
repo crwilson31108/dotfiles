@@ -1,0 +1,231 @@
+/* Catppuccin Mocha Colors */
+@define-color base #1e1e2e;
+@define-color mantle #181825;
+@define-color crust #11111b;
+@define-color surface0 #313244;
+@define-color surface1 #45475a;
+@define-color surface2 #585b70;
+@define-color text #cdd6f4;
+@define-color subtext1 #bac2de;
+@define-color subtext0 #a6adc8;
+@define-color blue #89b4fa;
+@define-color lavender #b4befe;
+@define-color sapphire #74c7ec;
+@define-color sky #89dceb;
+@define-color teal #94e2d5;
+@define-color green #a6e3a1;
+@define-color yellow #f9e2af;
+@define-color peach #fab387;
+@define-color red #f38ba8;
+@define-color mauve #cba6f7;
+@define-color pink #f5c2e7;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+}
+
+/* Window styling */
+window#waybar {
+    background: transparent;
+    border: none;
+}
+
+window#waybar.top {
+    background-color: rgba(17, 17, 27, 0.95);
+    border-bottom: 1px solid rgba(49, 50, 68, 0.3);
+}
+
+window#waybar.bottom {
+    background-color: rgba(17, 17, 27, 0.95);
+    border-top: 1px solid rgba(49, 50, 68, 0.3);
+}
+
+/* Base module styling */
+.modules-left, .modules-center, .modules-right {
+    background: transparent;
+}
+
+/* Common module styling */
+#workspaces,
+#clock,
+#bluetooth,
+#network,
+#pulseaudio,
+#backlight,
+#battery,
+#power-profiles-daemon,
+#wireplumber,
+#custom-power,
+#custom-launcher,
+#window,
+#mpris,
+#tray,
+#custom-updates,
+#idle_inhibitor {
+    color: @text;
+    border: none;
+    border-radius: 8px;
+    margin: 4px 2px;
+    padding: 4px 8px;
+    background-color: rgba(49, 50, 68, 0.6);
+    transition: all 0.2s ease;
+}
+
+/* Workspaces */
+#workspaces {
+    margin-left: 6px;
+    padding: 0;
+    background: transparent;
+}
+
+#workspaces button {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 2px 6px;
+    margin: 2px 1px;
+    border-radius: 6px;
+    background-color: rgba(49, 50, 68, 0.4);
+    color: @subtext0;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#workspaces button:hover {
+    background-color: rgba(69, 71, 90, 0.7);
+    color: @text;
+}
+
+#workspaces button.active {
+    background-color: @mauve;
+    color: @crust;
+}
+
+/* Clock */
+#clock {
+    background-color: rgba(203, 166, 247, 0.15);
+    color: @lavender;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 4px 12px;
+}
+
+#clock:hover {
+    background-color: rgba(203, 166, 247, 0.25);
+}
+
+/* System modules - minimal style */
+#bluetooth,
+#network,
+#pulseaudio,
+#backlight,
+#battery,
+#power-profiles-daemon,
+#wireplumber {
+    min-width: 20px;
+    padding: 4px 6px;
+    font-size: 11px;
+}
+
+#bluetooth:hover,
+#network:hover,
+#pulseaudio:hover,
+#backlight:hover,
+#battery:hover,
+#power-profiles-daemon:hover,
+#wireplumber:hover {
+    background-color: rgba(69, 71, 90, 0.8);
+}
+
+/* Battery states */
+#battery.warning {
+    color: @yellow;
+}
+
+#battery.critical {
+    color: @red;
+}
+
+/* Power button */
+#custom-power {
+    background-color: rgba(243, 139, 168, 0.15);
+    color: @red;
+    margin-right: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+#custom-power:hover {
+    background-color: rgba(243, 139, 168, 0.3);
+}
+
+/* Bottom bar modules */
+#custom-launcher {
+    background-color: rgba(180, 190, 254, 0.15);
+    color: @lavender;
+    margin-left: 6px;
+    padding: 4px 10px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#custom-launcher:hover {
+    background-color: rgba(180, 190, 254, 0.25);
+}
+
+#window {
+    background: transparent;
+    color: @subtext1;
+    font-size: 11px;
+    font-weight: 400;
+    font-style: italic;
+    padding: 4px 8px;
+}
+
+#mpris {
+    color: @green;
+    font-size: 11px;
+}
+
+#mpris:hover {
+    background-color: rgba(166, 227, 161, 0.15);
+}
+
+#tray {
+    margin-right: 4px;
+    padding: 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    background-color: @red;
+    border-radius: 4px;
+}
+
+#custom-updates {
+    color: @sky;
+    font-size: 11px;
+    min-width: 20px;
+}
+
+#custom-updates:hover {
+    background-color: rgba(137, 220, 235, 0.15);
+}
+
+#idle_inhibitor {
+    color: @yellow;
+    font-size: 11px;
+    margin-right: 6px;
+}
+
+#idle_inhibitor:hover {
+    background-color: rgba(249, 226, 175, 0.15);
+}
+

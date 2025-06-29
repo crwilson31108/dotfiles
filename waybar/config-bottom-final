@@ -1,0 +1,53 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "height": 40,
+    "spacing": 15,
+    "margin": 0,
+    
+    "modules-left": [
+        "custom/launcher"
+    ],
+    
+    "modules-center": [
+        "hyprland/window"
+    ],
+    
+    "modules-right": [
+        "custom/utilities",
+        "tray",
+        "custom/updates"
+    ],
+
+    "custom/launcher": {
+        "format": "≡",
+        "on-click": "wofi --show drun",
+        "tooltip": "Application Launcher"
+    },
+
+    "hyprland/window": {
+        "format": "{}",
+        "max-length": 50,
+        "separate-outputs": true
+    },
+
+    "custom/utilities": {
+        "format": "",
+        "on-click": "~/.config/waybar/scripts/utilities.sh",
+        "on-click-right": "cliphist list | wofi -dmenu | cliphist decode | wl-copy",
+        "on-click-middle": "rofimoji",
+        "tooltip": "Left: Menu | Right: Clipboard | Middle: Emoji"
+    },
+
+    "tray": {
+        "spacing": 10
+    },
+
+    "custom/updates": {
+        "exec": "count=$(checkupdates 2>/dev/null | wc -l); aur_count=$(yay -Qua 2>/dev/null | wc -l); total=$((count + aur_count)); if [ $total -eq 0 ]; then echo '🟢'; else echo \"📦 $total\"; fi",
+        "interval": 1800,
+        "format": "{}",
+        "on-click": "alacritty -e bash -c 'yay -Syu; echo Press any key to exit...; read -n 1'",
+        "tooltip": true
+    }
+}
