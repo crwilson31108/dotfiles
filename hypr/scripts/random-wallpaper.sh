@@ -3,11 +3,11 @@
 # Wallpaper directory
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
 
-# Initialize swww daemon
-swww-daemon &
-
-# Wait a moment for the daemon to start
-sleep 0.5
+# Initialize swww daemon only if not already running
+if ! pgrep -x "swww-daemon" > /dev/null; then
+    swww-daemon &
+    sleep 0.5
+fi
 
 # Get a random wallpaper from the directory
 # Only select image files (jpg, jpeg, png, webp)
