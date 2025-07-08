@@ -2,11 +2,13 @@ pragma Singleton
 
 import "./../utils/scripts/fuzzysort.js" as Fuzzy
 import Quickshell
+import Quickshell.Io
+import QtQuick
 
 Singleton {
     id: root
 
-    readonly property list<DesktopEntry> desktopApps: DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
+    property list<DesktopEntry> desktopApps: getDesktopApps()
     readonly property list<var> pathExecutables: getPathExecutables()
     readonly property list<var> allApps: desktopApps.concat(pathExecutables)
     readonly property list<var> preppedApps: allApps.map(a => ({
@@ -14,6 +16,28 @@ Singleton {
                 comment: Fuzzy.prepare(a.comment || a.command),
                 entry: a
             }))
+
+    Process {
+        running: true
+        command: ["inotifywait", "-m", "-e", "close_write,moved_to,create,delete", 
+                  "/usr/share/applications", Quickshell.env("HOME") + "/.local/share/applications"]
+        
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text.includes(".desktop")) {
+                    refreshApps()
+                }
+            }
+        }
+    }
+
+    function getDesktopApps() {
+        return DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
+    }
+
+    function refreshApps() {
+        desktopApps = getDesktopApps()
+    }
 
     function getPathExecutables(): var {
         const result = Quickshell.execSync("bash", ["-c", "echo $PATH | tr ':' '\\n' | xargs -I {} find {} -maxdepth 1 -type f -executable 2>/dev/null | sort -u | head -200"]);

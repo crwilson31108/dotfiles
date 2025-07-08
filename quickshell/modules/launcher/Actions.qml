@@ -131,6 +131,16 @@ Singleton {
                 list.visibilities.launcher = false;
                 Quickshell.execDetached(["systemctl", "suspend-then-hibernate"]);
             }
+        },
+        Action {
+            name: qsTr("Refresh Apps")
+            desc: qsTr("Manually refresh the application list")
+            icon: "refresh"
+
+            function onClicked(list: AppList): void {
+                list.visibilities.launcher = false;
+                Apps.refreshApps();
+            }
         }
     ]
 
