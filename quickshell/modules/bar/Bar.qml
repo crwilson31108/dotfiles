@@ -12,6 +12,7 @@ Item {
 
     required property ShellScreen screen
     required property BarPopouts.Wrapper popouts
+    required property PersistentProperties visibilities
 
     function checkPopout(x: real): void {
         const spacing = Appearance.spacing.small;
@@ -96,6 +97,8 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: Appearance.padding.large
+            
+            visibilities: root.visibilities
         }
 
         StyledRect {

@@ -29,7 +29,7 @@ Variants {
             screen: scope.modelData
             name: "drawers"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.windowswitcher ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
                 x: Config.border.thickness
@@ -63,12 +63,13 @@ Variants {
             }
 
             HyprlandFocusGrab {
-                active: visibilities.launcher || visibilities.session || visibilities.windowswitcher
+                active: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview
                 windows: [win]
                 onCleared: {
                     visibilities.launcher = false;
                     visibilities.session = false;
                     visibilities.windowswitcher = false;
+                    visibilities.overview = false;
                 }
             }
 
@@ -136,6 +137,7 @@ Variants {
                 property bool launcher
                 property bool dashboard
                 property bool windowswitcher
+                property bool overview
 
                 Component.onCompleted: Visibilities.screens[scope.modelData] = this
             }
@@ -161,6 +163,7 @@ Variants {
 
                 screen: scope.modelData
                 popouts: panels.popouts
+                visibilities: visibilities
             }
         }
     }

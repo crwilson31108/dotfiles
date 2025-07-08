@@ -6,6 +6,7 @@ import "./../session" as Session
 import "./../launcher" as Launcher
 import "./../dashboard" as Dashboard
 import "./../windowswitcher" as WindowSwitcherModule
+import "./../overview" as Overview
 import "./../bar/popouts" as BarPopouts
 import Quickshell
 import QtQuick
@@ -23,6 +24,7 @@ Item {
     readonly property Launcher.Wrapper launcher: launcher
     readonly property Dashboard.Wrapper dashboard: dashboard
     readonly property WindowSwitcherModule.Wrapper windowSwitcher: windowSwitcher
+    readonly property Overview.Wrapper overview: overview
     readonly property BarPopouts.Wrapper popouts: popouts
 
     anchors.fill: parent
@@ -84,6 +86,17 @@ Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
+    }
+
+    Overview.Wrapper {
+        id: overview
+
+        visibilities: root.visibilities
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        width: parent.width
+        height: visibilities.overview ? parent.height : 0
     }
 
     BarPopouts.Wrapper {
