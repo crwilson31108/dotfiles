@@ -30,17 +30,15 @@ Singleton {
             // Filter out invalid addresses
             const originalLength = focusHistory.length;
             focusHistory = focusHistory.filter(address => validAddresses.includes(address));
-            
-            // Log cleanup if any stale entries were removed
-            if (focusHistory.length !== originalLength) {
-                console.log(`Cleaned up ${originalLength - focusHistory.length} stale window addresses from focus history`);
-            }
         }
     }
     
     
     function show(): void {
         if (visible) return;
+        
+        // Stop the hide timer if it's running (user showing switcher again quickly)
+        hideTimer.stop();
         
         // Get all windows excluding special workspaces and minimized
         let filteredWindows = Hyprland.toplevels.values.filter(window => {
@@ -67,6 +65,7 @@ Singleton {
             return 0;
         });
         
+        
         // Start from the second most recently focused window (index 1)
         // since index 0 is the currently active window
         currentIndex = availableWindows.length > 1 ? 1 : 0;
@@ -87,19 +86,35 @@ Singleton {
         
         // Focus the selected window if we have one
         if (selectedWindow) {
-            console.log(`Focusing window: ${selectedWindow.title}, address: ${selectedWindow.address}`);
             Hyprland.dispatch(`focuswindow address:0x${selectedWindow.address.toString(16)}`);
         }
         
         visible = false;
-        availableWindows = [];
-        selectedWindow = null;
-        currentIndex = 0;
         
-        // Also clear the visibility in the drawer system
+        // Clear the visibility in the drawer system to start animation
         const visibilities = Visibilities.getForActive();
         if (visibilities) {
             visibilities.windowswitcher = false;
+        }
+        
+        // Delay clearing the window data until animation completes
+        // Use the same duration as the exit animation
+        hideTimer.start();
+    }
+    
+    Timer {
+        id: hideTimer
+        interval: 400 // Should match Appearance.anim.durations.expressiveDefaultSpatial
+        running: false
+        repeat: false
+        
+        onTriggered: {
+            // Double-check that we're not visible before clearing
+            if (!visible) {
+                availableWindows = [];
+                selectedWindow = null;
+                currentIndex = 0;
+            }
         }
     }
     
@@ -147,17 +162,17 @@ Singleton {
     
     function onEscapePressed(): void {
         if (visible) {
-            // Cancel without switching
+            // Cancel without switching - don't focus any window
             visible = false;
-            availableWindows = [];
-            selectedWindow = null;
-            currentIndex = 0;
             
-            // Also clear the visibility in the drawer system
+            // Clear the visibility in the drawer system to start animation
             const visibilities = Visibilities.getForActive();
             if (visibilities) {
                 visibilities.windowswitcher = false;
             }
+            
+            // Delay clearing the window data until animation completes
+            hideTimer.start();
         }
     }
     

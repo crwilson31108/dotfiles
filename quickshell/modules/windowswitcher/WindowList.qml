@@ -8,19 +8,19 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    readonly property int maxHorizontalItems: 6
+    readonly property int maxHorizontalItems: 5
     readonly property bool useGridLayout: WindowSwitcher.availableWindows.length > maxHorizontalItems
     
     implicitWidth: useGridLayout ? gridLayout.implicitWidth : horizontalLayout.implicitWidth
     implicitHeight: useGridLayout ? gridLayout.implicitHeight : horizontalLayout.implicitHeight
 
-    // Horizontal layout for <= 6 windows
+    // Horizontal layout for <= 5 windows
     RowLayout {
         id: horizontalLayout
         
         visible: !root.useGridLayout
         anchors.centerIn: parent
-        spacing: Appearance.spacing.normal
+        spacing: Appearance.spacing.large
 
         Repeater {
             model: WindowSwitcher.availableWindows
@@ -37,18 +37,18 @@ Item {
         }
     }
 
-    // Grid layout for > 6 windows  
+    // Grid layout for > 5 windows  
     GridLayout {
         id: gridLayout
         
         visible: root.useGridLayout
         anchors.centerIn: parent
         
-        columns: Math.min(4, Math.ceil(Math.sqrt(WindowSwitcher.availableWindows.length)))
+        columns: Math.min(3, Math.ceil(Math.sqrt(WindowSwitcher.availableWindows.length)))
         rows: Math.ceil(WindowSwitcher.availableWindows.length / columns)
         
-        columnSpacing: Appearance.spacing.normal
-        rowSpacing: Appearance.spacing.normal
+        columnSpacing: Appearance.spacing.large
+        rowSpacing: Appearance.spacing.large
 
         Repeater {
             model: WindowSwitcher.availableWindows

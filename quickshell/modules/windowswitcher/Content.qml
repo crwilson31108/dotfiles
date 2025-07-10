@@ -12,20 +12,19 @@ Item {
     required property PersistentProperties visibilities
     readonly property int padding: Appearance.padding.large
     readonly property int rounding: Appearance.rounding.large
+    readonly property int baseHeight: 120 + padding * 2 // Normal card height + padding
 
-    implicitWidth: listWrapper.width + padding * 2
-    implicitHeight: listWrapper.height + padding * 2
+    implicitWidth: listWrapper.implicitWidth + padding * 2
+    implicitHeight: Math.max(listWrapper.implicitHeight + padding * 2, baseHeight)
 
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
 
     Item {
         id: listWrapper
-
-        readonly property int minHeight: 100 + Appearance.spacing.normal * 2 // Card height + spacing
         
-        implicitWidth: list.width
-        implicitHeight: Math.max(list.height + root.padding, minHeight)
+        implicitWidth: list.implicitWidth
+        implicitHeight: list.implicitHeight
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
@@ -39,7 +38,6 @@ Item {
     // Key event handling for Alt release detection
     Keys.onReleased: event => {
         if (event.key === Qt.Key_Alt) {
-            console.log("Alt key released in window switcher!");
             WindowSwitcher.hide();
         }
     }

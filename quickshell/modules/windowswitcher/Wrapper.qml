@@ -14,6 +14,9 @@ Item {
 
     visible: height > 0
     implicitHeight: 0
+    clip: true
+    
+    // Keep width stable during animations
     implicitWidth: content.implicitWidth
 
     states: State {
@@ -45,9 +48,9 @@ Item {
             NumberAnimation {
                 target: root
                 property: "implicitHeight"
-                duration: Appearance.anim.durations.normal
+                duration: Appearance.anim.durations.expressiveDefaultSpatial
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.emphasized
+                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
             }
         }
     ]
