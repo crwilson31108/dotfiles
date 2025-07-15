@@ -18,6 +18,8 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        propagateComposedEvents: true
 
         onWheel: event => {
             if (event.angleDelta.y > 0)

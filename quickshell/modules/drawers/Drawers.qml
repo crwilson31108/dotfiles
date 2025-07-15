@@ -28,6 +28,7 @@ Variants {
 
             screen: scope.modelData
             name: "drawers"
+            WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
             WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
@@ -89,12 +90,6 @@ Variants {
 
             Item {
                 anchors.fill: parent
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    blurMax: 15
-                    shadowColor: Qt.alpha(Colours.palette.m3shadow, 0.7)
-                }
 
                 Border {
                     bar: bar

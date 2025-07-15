@@ -46,13 +46,9 @@ MouseArea {
 
     anchors.fill: parent
     hoverEnabled: true
+    acceptedButtons: Qt.NoButton
 
 
-    onPressed: event => {
-        dragStart = Qt.point(event.x, event.y);
-        // Dismiss popouts on any click
-        popouts.hasCurrent = false;
-    }
     onContainsMouseChanged: {
         if (!containsMouse) {
             // Only hide if not activated by shortcut
@@ -88,14 +84,6 @@ MouseArea {
             osdHovered = true;
         }
 
-        // Show/hide session on drag
-        if (pressed && withinPanelHeight(panels.session, x, y)) {
-            const dragX = x - dragStart.x;
-            if (dragX < -Config.session.dragThreshold)
-                visibilities.session = true;
-            else if (dragX > Config.session.dragThreshold)
-                visibilities.session = false;
-        }
 
         // Show dashboard on hover
         const showDashboard = inBottomPanel(panels.dashboard, x, y);

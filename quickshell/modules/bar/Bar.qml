@@ -118,6 +118,8 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: -Config.border.thickness
                 anchors.rightMargin: -Config.border.thickness
+                acceptedButtons: Qt.NoButton
+                propagateComposedEvents: true
 
                 onWheel: event => {
                     const activeWs = Hyprland.activeToplevel?.workspace?.name;

@@ -17,6 +17,8 @@ MouseArea {
 
     cursorShape: disabled ? undefined : Qt.PointingHandCursor
     hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    propagateComposedEvents: true
 
     onPressed: event => {
         rippleAnim.x = event.x;

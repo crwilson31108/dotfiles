@@ -99,6 +99,7 @@ Item {
         height: visibilities.overview ? parent.height : 0
     }
 
+
     BarPopouts.Wrapper {
         id: popouts
 
