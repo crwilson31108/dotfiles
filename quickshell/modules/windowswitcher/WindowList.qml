@@ -8,60 +8,95 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    readonly property int maxHorizontalItems: 5
-    readonly property bool useGridLayout: WindowSwitcher.availableWindows.length > maxHorizontalItems
+    readonly property int maxVisibleCards: 5
+    readonly property bool needsSliding: WindowSwitcher.availableWindows.length > maxVisibleCards
+    readonly property int startIndex: needsSliding ? 
+        Math.max(0, Math.min(WindowSwitcher.currentIndex - Math.floor(maxVisibleCards / 2), 
+                             WindowSwitcher.availableWindows.length - maxVisibleCards)) : 0
+    readonly property var visibleWindows: needsSliding ? 
+        WindowSwitcher.availableWindows.slice(startIndex, startIndex + maxVisibleCards) : 
+        WindowSwitcher.availableWindows
     
-    implicitWidth: useGridLayout ? gridLayout.implicitWidth : horizontalLayout.implicitWidth
-    implicitHeight: useGridLayout ? gridLayout.implicitHeight : horizontalLayout.implicitHeight
+    readonly property bool hasMore: WindowSwitcher.availableWindows.length > maxVisibleCards
+    readonly property bool hasMoreBefore: hasMore && startIndex > 0
+    readonly property bool hasMoreAfter: hasMore && (startIndex + maxVisibleCards) < WindowSwitcher.availableWindows.length
+    
+    implicitWidth: horizontalLayout.implicitWidth
+    implicitHeight: horizontalLayout.implicitHeight
 
-    // Horizontal layout for <= 5 windows
+    // Single row layout - always horizontal
     RowLayout {
         id: horizontalLayout
         
-        visible: !root.useGridLayout
         anchors.centerIn: parent
         spacing: Appearance.spacing.large
 
-        Repeater {
-            model: WindowSwitcher.availableWindows
+        // "More before" indicator
+        Rectangle {
+            visible: root.hasMoreBefore
+            width: 8
+            height: 60
+            radius: 4
+            color: Colours.alpha(Colours.palette.m3onSurface, 0.3)
             
-            WindowCard {
-                required property var modelData
-                required property int index
-                
-                window: modelData
-                selected: WindowSwitcher.currentIndex === index
-                
-                onClicked: WindowSwitcher.selectWindow(modelData)
+            Rectangle {
+                anchors.centerIn: parent
+                width: 4
+                height: 4
+                radius: 2
+                color: Colours.palette.m3onSurface
             }
         }
-    }
-
-    // Grid layout for > 5 windows  
-    GridLayout {
-        id: gridLayout
-        
-        visible: root.useGridLayout
-        anchors.centerIn: parent
-        
-        columns: Math.min(3, Math.ceil(Math.sqrt(WindowSwitcher.availableWindows.length)))
-        rows: Math.ceil(WindowSwitcher.availableWindows.length / columns)
-        
-        columnSpacing: Appearance.spacing.large
-        rowSpacing: Appearance.spacing.large
 
         Repeater {
-            model: WindowSwitcher.availableWindows
+            model: root.visibleWindows
             
             WindowCard {
                 required property var modelData
                 required property int index
                 
                 window: modelData
-                selected: WindowSwitcher.currentIndex === index
-                compact: true  // Smaller size for grid
+                selected: root.needsSliding ? 
+                    WindowSwitcher.currentIndex === (root.startIndex + index) : 
+                    WindowSwitcher.currentIndex === index
+                showPreview: selected
                 
                 onClicked: WindowSwitcher.selectWindow(modelData)
+                
+                // Smooth sliding animation
+                opacity: 1.0
+                scale: 1.0
+                
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: Appearance.anim.durations.fast
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: Appearance.anim.durations.fast  
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
+        }
+        
+        // "More after" indicator
+        Rectangle {
+            visible: root.hasMoreAfter
+            width: 8
+            height: 60
+            radius: 4
+            color: Colours.alpha(Colours.palette.m3onSurface, 0.3)
+            
+            Rectangle {
+                anchors.centerIn: parent
+                width: 4
+                height: 4
+                radius: 2
+                color: Colours.palette.m3onSurface
             }
         }
     }

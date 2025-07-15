@@ -9,9 +9,9 @@ Singleton {
     id: root
 
     property list<DesktopEntry> desktopApps: getDesktopApps()
-    readonly property list<var> pathExecutables: getPathExecutables()
-    readonly property list<var> allApps: desktopApps.concat(pathExecutables)
-    readonly property list<var> preppedApps: allApps.map(a => ({
+    property list<var> pathExecutables: getPathExecutables()
+    property list<var> allApps: desktopApps.concat(pathExecutables)
+    property list<var> preppedApps: allApps.map(a => ({
                 name: Fuzzy.prepare(a.name || a.command),
                 comment: Fuzzy.prepare(a.comment || a.command),
                 entry: a
@@ -37,6 +37,13 @@ Singleton {
 
     function refreshApps() {
         desktopApps = getDesktopApps()
+        pathExecutables = getPathExecutables()
+        allApps = desktopApps.concat(pathExecutables)
+        preppedApps = allApps.map(a => ({
+                    name: Fuzzy.prepare(a.name || a.command),
+                    comment: Fuzzy.prepare(a.comment || a.command),
+                    entry: a
+                }))
     }
 
     function getPathExecutables(): var {

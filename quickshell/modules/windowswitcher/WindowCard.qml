@@ -4,6 +4,7 @@ import "./../../config"
 import "./../../utils"
 import Quickshell
 import Quickshell.Widgets
+import Quickshell.Wayland
 import QtQuick
 
 Item {
@@ -12,12 +13,15 @@ Item {
     required property var window
     required property bool selected
     property bool compact: false
+    property bool showPreview: false
     
     signal clicked()
 
     readonly property int cardWidth: compact ? 140 : 180
     readonly property int cardHeight: compact ? 90 : 120
     readonly property int iconSize: compact ? 36 : 56
+    readonly property int previewWidth: Config.windowSwitcher.preview.width
+    readonly property int previewHeight: Config.windowSwitcher.preview.height
 
     implicitWidth: cardWidth
     implicitHeight: cardHeight
@@ -56,13 +60,15 @@ Item {
         }
     }
 
-    // Content
-    Column {
-        anchors.centerIn: parent
-        spacing: card.compact ? Appearance.spacing.small : Appearance.spacing.normal
+    // Content layout
+    Item {
+        anchors.fill: parent
+        anchors.margins: Appearance.padding.small
 
         // App icon with background circle
         Item {
+            id: iconContainer
+            anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             width: card.iconSize + (card.selected ? 12 : 8)
             height: card.iconSize + (card.selected ? 12 : 8)
@@ -95,46 +101,60 @@ Item {
             }
         }
 
-        // Window title
-        StyledText {
+        // Text container to ensure proper spacing
+        Item {
+            anchors.top: iconContainer.bottom
+            anchors.topMargin: card.compact ? 4 : 6
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 4
             anchors.horizontalCenter: parent.horizontalCenter
+            width: card.cardWidth - Appearance.padding.large
             
-            text: WindowIconMapper.getWindowTitle(card.window)
-            font.pointSize: card.compact ? Appearance.font.size.small : Appearance.font.size.normal
-            font.weight: card.selected ? Font.Medium : Font.Normal
-            
-            color: card.selected ? 
-                Colours.palette.m3onPrimaryContainer : 
-                Colours.palette.m3onSurface
-            
-            elide: Text.ElideRight
-            width: Math.min(implicitWidth, card.cardWidth - Appearance.padding.large)
-            horizontalAlignment: Text.AlignHCenter
-            
-            Behavior on color {
-                ColorAnimation {
-                    duration: Appearance.anim.durations.fast
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.standard
+            // App name (primary)
+            StyledText {
+                id: appNameText
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                text: AppMatching.getWindowAppName(card.window)
+                font.pointSize: card.compact ? Appearance.font.size.small : Appearance.font.size.normal
+                font.weight: card.selected ? Font.Medium : Font.Normal
+                
+                color: card.selected ? 
+                    Colours.palette.m3onPrimaryContainer : 
+                    Colours.palette.m3onSurface
+                
+                elide: Text.ElideRight
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                
+                Behavior on color {
+                    ColorAnimation {
+                        duration: Appearance.anim.durations.fast
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
                 }
             }
-        }
 
-        // App name (secondary text)
-        StyledText {
-            anchors.horizontalCenter: parent.horizontalCenter
-            visible: !card.compact
-            
-            text: AppMatching.getWindowAppName(card.window)
-            font.pointSize: Appearance.font.size.smaller
-            
-            color: card.selected ? 
-                Colours.alpha(Colours.palette.m3onPrimaryContainer, 0.7) : 
-                Colours.palette.m3onSurfaceVariant
-            
-            elide: Text.ElideRight
-            width: Math.min(implicitWidth, card.cardWidth - Appearance.padding.large)
-            horizontalAlignment: Text.AlignHCenter
+            // Window title (secondary)
+            StyledText {
+                anchors.top: appNameText.bottom
+                anchors.topMargin: 1
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible: !card.compact && (anchors.topMargin + implicitHeight <= parent.height - appNameText.height)
+                
+                text: WindowIconMapper.getWindowTitle(card.window)
+                font.pointSize: Appearance.font.size.smaller
+                
+                color: card.selected ? 
+                    Colours.alpha(Colours.palette.m3onPrimaryContainer, 0.7) : 
+                    Colours.palette.m3onSurfaceVariant
+                
+                elide: Text.ElideRight
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+            }
         }
     }
 
@@ -180,4 +200,5 @@ Item {
             }
         }
     }
+
 }

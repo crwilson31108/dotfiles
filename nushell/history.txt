@@ -1,1 +1,8 @@
 ls
+cd Documents/
+cd Github/Lisa-Frank-Sticker-Management/
+ls
+cd project/
+ls
+ls -a
+ls

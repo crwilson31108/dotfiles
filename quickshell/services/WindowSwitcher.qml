@@ -44,7 +44,9 @@ Singleton {
         let filteredWindows = Hyprland.toplevels.values.filter(window => {
             return window.mapped !== false && 
                    !window.workspace?.name?.startsWith("special:") &&
-                   window.title !== "";
+                   window.title !== "" &&
+                   window.title !== null &&
+                   window.workspace?.id !== undefined;
         });
         
         if (filteredWindows.length === 0) return;
@@ -72,6 +74,7 @@ Singleton {
         
         selectedWindow = availableWindows[currentIndex];
         visible = true;
+        
         
         // Also set the visibility in the drawer system
         const visibilities = Visibilities.getForActive();
@@ -221,7 +224,9 @@ Singleton {
                 let filteredWindows = Hyprland.toplevels.values.filter(window => {
                     return window.mapped !== false && 
                            !window.workspace?.name?.startsWith("special:") &&
-                           window.title !== "";
+                           window.title !== "" &&
+                           window.title !== null &&
+                           window.workspace?.id !== undefined;
                 });
                 
                 availableWindows = filteredWindows.sort((a, b) => {
