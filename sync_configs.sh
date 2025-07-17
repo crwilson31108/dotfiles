@@ -17,9 +17,7 @@ CONFIG_DIR="$USER_HOME/.config"
 
 echo "🔄 Syncing configuration files to dotfiles repository..."
 
-# Create backup timestamp
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-echo "📅 Backup timestamp: $TIMESTAMP"
+# No backup functionality - direct sync
 
 # Function to sync a config directory (true 1:1 mirror with deletions)
 sync_config() {
@@ -30,9 +28,9 @@ sync_config() {
     if [ -d "$src_dir" ]; then
         echo "📁 Syncing $name (with deletions)..."
         
-        # Create backup if destination exists
+        # Remove destination if it exists
         if [ -d "$dest_dir" ]; then
-            mv "$dest_dir" "${dest_dir}.backup.$TIMESTAMP"
+            rm -rf "$dest_dir"
         fi
         
         # Copy the directory (complete replacement)
@@ -59,9 +57,9 @@ sync_file() {
     if [ -f "$src_file" ]; then
         echo "📄 Syncing $name..."
         
-        # Create backup if destination exists
+        # Remove destination if it exists
         if [ -f "$dest_file" ]; then
-            mv "$dest_file" "${dest_file}.backup.$TIMESTAMP"
+            rm -f "$dest_file"
         fi
         
         # Copy the file
@@ -160,7 +158,7 @@ echo "🎉 Sync completed successfully!"
 echo "📊 Summary:"
 echo "   - Active configs copied to: $DOTFILES_DIR"
 echo "   - TRUE 1:1 MIRROR: Deleted files/folders permanently removed"
-echo "   - Backups created with timestamp: $TIMESTAMP"
+echo "   - No backups created (direct overwrite)"
 echo "   - Orphaned items deleted (no recovery)"
 echo "   - Sync script maintained in dotfiles repo"
 echo "   - Ready to commit changes to git"

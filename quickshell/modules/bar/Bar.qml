@@ -121,12 +121,55 @@ Item {
                 acceptedButtons: Qt.NoButton
                 propagateComposedEvents: true
 
+                property bool scrollCooldown: false
+                property int scrollAccumulator: 0
+
+                Timer {
+                    id: scrollTimer
+                    interval: 200  // 200ms cooldown
+                    repeat: false
+                    onTriggered: parent.scrollCooldown = false
+                }
+
+                Timer {
+                    id: accumulatorTimer
+                    interval: 50  // Reset accumulator after 50ms of no scrolling
+                    repeat: false
+                    onTriggered: parent.scrollAccumulator = 0
+                }
+
                 onWheel: event => {
+                    if (scrollCooldown) return;
+                    
                     const activeWs = Hyprland.activeToplevel?.workspace?.name;
-                    if (activeWs?.startsWith("special:"))
+                    if (activeWs?.startsWith("special:")) {
                         Hyprland.dispatch(`togglespecialworkspace ${activeWs.slice(8)}`);
-                    else if (event.angleDelta.y < 0 || Hyprland.activeWsId > 1)
-                        Hyprland.dispatch(`workspace r${event.angleDelta.y > 0 ? "-" : "+"}1`);
+                        return;
+                    }
+                    
+                    // Accumulate scroll delta
+                    scrollAccumulator += event.angleDelta.y;
+                    accumulatorTimer.restart();
+                    
+                    // Only switch workspace if we've accumulated enough scroll distance
+                    const threshold = 120; // Standard scroll wheel click is 120 units
+                    if (Math.abs(scrollAccumulator) >= threshold) {
+                        const currentWs = Hyprland.activeWsId;
+                        let nextWs;
+                        
+                        if (scrollAccumulator > 0) {
+                            // Scroll up - go to previous workspace
+                            nextWs = currentWs <= 1 ? 4 : currentWs - 1;
+                        } else {
+                            // Scroll down - go to next workspace
+                            nextWs = currentWs >= 4 ? 1 : currentWs + 1;
+                        }
+                        
+                        Hyprland.dispatch(`workspace ${nextWs}`);
+                        scrollCooldown = true;
+                        scrollAccumulator = 0;
+                        scrollTimer.start();
+                    }
                 }
             }
 
