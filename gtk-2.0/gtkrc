@@ -1,3 +1,7 @@
+# DO NOT EDIT! This file will be overwritten by nwg-look.
+# Any customization should be done in ~/.gtkrc-2.0.mine instead.
+
+include "/home/caseyw/.gtkrc-2.0.mine"
 gtk-theme-name="rose-pine-gtk"
 gtk-icon-theme-name="Papirus-Dark"
 gtk-font-name="Adwaita Sans 11"

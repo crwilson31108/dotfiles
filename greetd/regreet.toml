@@ -1,0 +1,32 @@
+[background]
+# Rose Pine Dark themed background - you can change this path
+path = "/usr/share/backgrounds/greeter.jpg"
+fit = "Cover"
+
+[GTK]
+# Enable dark theme for Rose Pine Dark
+application_prefer_dark_theme = true
+
+# Cursor theme - you can change to your preferred cursor
+cursor_theme_name = "Adwaita"
+
+# Font configuration
+font_name = "JetBrains Mono 14"
+
+# Icon theme - you can change to your preferred icons
+icon_theme_name = "Papirus-Dark"
+
+# GTK theme - use a dark theme
+theme_name = "Adwaita-dark"
+
+[commands]
+reboot = [ "systemctl", "reboot" ]
+poweroff = [ "systemctl", "poweroff" ]
+
+[appearance]
+# Rose Pine themed greeting
+greeting_msg = "Welcome to Rose Pine"
+
+[widget.clock]
+format = "%a %H:%M"
+resolution = "1s"
