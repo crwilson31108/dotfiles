@@ -109,40 +109,33 @@ fi
 
 # Sync system-wide configs (if accessible)
 echo "📁 Checking system configs..."
+
+# Sync SDDM configuration
 if [ -r "/etc/sddm.conf" ]; then
     sync_file "/etc/sddm.conf" "$DOTFILES_DIR/sddm.conf" "SDDM Config"
 fi
 
-# Sync greetd/regreet configs
-echo "📁 Syncing greetd/regreet configs..."
-if [ -d "/etc/greetd" ]; then
-    echo "📄 Syncing greetd configuration..."
-    mkdir -p "$DOTFILES_DIR/greetd"
-    
-    # Copy greetd config files (if readable)
-    if [ -r "/etc/greetd/config.toml" ]; then
-        cp "/etc/greetd/config.toml" "$DOTFILES_DIR/greetd/config.toml"
-        echo "✅ greetd config.toml synced"
-    fi
-    
-    if [ -r "/etc/greetd/hyprland.conf" ]; then
-        cp "/etc/greetd/hyprland.conf" "$DOTFILES_DIR/greetd/hyprland.conf"
-        echo "✅ greetd hyprland.conf synced"
-    fi
-    
-    if [ -r "/etc/greetd/regreet.toml" ]; then
-        cp "/etc/greetd/regreet.toml" "$DOTFILES_DIR/greetd/regreet.toml"
-        echo "✅ regreet.toml synced"
-    fi
-    
-    if [ -r "/etc/greetd/regreet.css" ]; then
-        cp "/etc/greetd/regreet.css" "$DOTFILES_DIR/greetd/regreet.css"
-        echo "✅ regreet.css synced"
-    fi
-    
-    echo "✅ greetd/regreet configs synced successfully"
+# Sync SDDM theme
+echo "📁 Syncing SDDM Rose Pine theme..."
+if [ -d "/usr/share/sddm/themes/rose-pine" ]; then
+    echo "📄 Syncing SDDM Rose Pine theme..."
+    sync_config "/usr/share/sddm/themes/rose-pine" "$DOTFILES_DIR/sddm-rose-pine" "SDDM Rose Pine Theme"
 else
-    echo "⚠️  Warning: /etc/greetd not found or not accessible, skipping greetd configs"
+    echo "⚠️  Warning: /usr/share/sddm/themes/rose-pine not found, skipping SDDM theme"
+    
+    # If theme doesn't exist in system but exists in dotfiles, remove from dotfiles
+    if [ -d "$DOTFILES_DIR/sddm-rose-pine" ]; then
+        echo "🗑️  Removing orphaned SDDM Rose Pine theme (no longer installed)"
+        rm -rf "$DOTFILES_DIR/sddm-rose-pine"
+        echo "✅ Orphaned SDDM theme directory deleted"
+    fi
+fi
+
+# Clean up old greetd/regreet configs if they exist in dotfiles
+if [ -d "$DOTFILES_DIR/greetd" ]; then
+    echo "🗑️  Removing old greetd/regreet configs from dotfiles..."
+    rm -rf "$DOTFILES_DIR/greetd"
+    echo "✅ Old greetd directory removed"
 fi
 
 # Sync the sync script itself to maintain it in the repo
