@@ -1,1 +1,21 @@
-/usr/share/themes/catppuccin-mocha-red-standard+default/gtk-4.0/gtk.css
+/* Import the base theme */
+@import url("file:///usr/share/themes/catppuccin-mocha-red-standard+default/gtk-4.0/gtk.css");
+
+/* Font optimization for better readability */
+* {
+  font-family: "Inter", sans-serif;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* Ensure crisp text rendering */
+text, label {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace font for code elements */
+code, .monospace, textview text {
+  font-family: "JetBrains Mono", monospace;
+}

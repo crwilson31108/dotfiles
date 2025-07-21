@@ -64,6 +64,9 @@ sudo pacman -S \
   kvantum \
   papirus-icon-theme \
   ttf-jetbrains-mono-nerd \
+  inter-font \
+  ttf-roboto \
+  ttf-fira-code \
   nwg-look \
   nwg-displays \
   xsettingsd \
@@ -193,6 +196,9 @@ hyprpm enable Hyprspace
 - **kvantum** - Qt theme engine
 - **papirus-icon-theme** - Icon theme
 - **ttf-jetbrains-mono-nerd** - Programming font with icons
+- **inter-font** - High-quality UI font optimized for screens
+- **ttf-roboto** - Google's modern UI font
+- **ttf-fira-code** - Programming font with ligatures
 - **catppuccin-gtk-theme-mocha** (AUR) - GTK theme
 - **bibata-cursor-theme** (AUR) - Cursor theme
 - **nwg-look** - GTK theme switcher
@@ -241,9 +247,13 @@ cp -r qt6ct ~/.config/
 cp -r Kvantum ~/.config/
 cp -r gtk-3.0 ~/.config/
 cp -r gtk-4.0 ~/.config/
+cp -r fontconfig ~/.config/
 cp -r nwg-displays ~/.config/
 cp -r nwg-look ~/.config/
 cp -r Thunar ~/.config/
+# Copy GTK 2.0 files
+cp gtk-2.0/gtkrc ~/.gtkrc-2.0
+cp gtk-2.0/gtkrc.mine ~/.gtkrc-2.0.mine
 ```
 
 3. Enable necessary services:
@@ -258,7 +268,38 @@ sudo systemctl enable --now cups
 chsh -s /usr/bin/fish
 ```
 
-5. Log out and log back in using Hyprland session.
+5. Rebuild the font cache:
+```bash
+fc-cache -fv
+```
+
+6. Log out and log back in using Hyprland session.
+
+## Font Configuration
+
+This setup includes optimized font rendering for high-DPI displays with:
+
+### Font Choices
+- **UI Font**: Inter - Modern, highly legible font optimized for screens
+- **Monospace Font**: JetBrains Mono - Programming font with excellent readability
+- **Fallback Fonts**: Roboto, Fira Code, Noto fonts
+
+### Rendering Optimizations
+- **Antialiasing**: Enabled with slight hinting for high-DPI displays
+- **Subpixel Rendering**: RGB layout for LCD screens
+- **OpenType Features**: Kerning and ligatures enabled
+- **Cross-toolkit Consistency**: Unified font configuration across Qt5, Qt6, GTK3, GTK4, and GTK2
+
+### Configuration Files
+- `~/.config/fontconfig/` - Font rendering configuration
+- `~/.config/gtk-3.0/settings.ini` - GTK3 font settings
+- `~/.config/gtk-4.0/settings.ini` - GTK4 font settings
+- `~/.config/gtk-4.0/gtk.css` - GTK4 custom CSS with font optimizations
+- `~/.gtkrc-2.0.mine` - GTK2 custom font settings
+- `~/.config/qt5ct/qt5ct.conf` - Qt5 font configuration
+- `~/.config/qt6ct/qt6ct.conf` - Qt6 font configuration
+
+The configuration ensures consistent, crisp font rendering across all applications.
 
 ## Login Manager Setup (greetd/regreet)
 

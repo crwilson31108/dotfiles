@@ -106,9 +106,10 @@ Item {
                 target: root.visibilities
 
                 function onLauncherChanged(): void {
-                    if (root.visibilities.launcher)
+                    if (root.visibilities.launcher) {
+                        Apps.refreshApps();
                         search.focus = true;
-                    else {
+                    } else {
                         search.text = "";
                         const current = list.currentList;
                         if (current)

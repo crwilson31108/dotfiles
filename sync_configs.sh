@@ -107,6 +107,17 @@ if [ -f "$USER_HOME/.gtkrc-2.0" ]; then
     echo "✅ GTK 2.0 settings synced successfully"
 fi
 
+# Sync GTK 2.0 custom settings
+if [ -f "$USER_HOME/.gtkrc-2.0.mine" ]; then
+    echo "📄 Syncing GTK 2.0 custom settings..."
+    mkdir -p "$DOTFILES_DIR/gtk-2.0"
+    cp "$USER_HOME/.gtkrc-2.0.mine" "$DOTFILES_DIR/gtk-2.0/gtkrc.mine"
+    echo "✅ GTK 2.0 custom settings synced successfully"
+fi
+
+# Sync font configuration
+sync_config "$CONFIG_DIR/fontconfig" "$DOTFILES_DIR/fontconfig" "Font Configuration"
+
 # Sync system-wide configs (if accessible)
 echo "📁 Checking system configs..."
 

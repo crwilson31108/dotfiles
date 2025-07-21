@@ -17,22 +17,39 @@ Singleton {
                 entry: a
             }))
 
+    // Monitor desktop application directories including Flatpak
     Process {
         running: true
         command: ["inotifywait", "-m", "-e", "close_write,moved_to,create,delete", 
-                  "/usr/share/applications", Quickshell.env("HOME") + "/.local/share/applications"]
+                  "/usr/share/applications", 
+                  "/var/lib/flatpak/exports/share/applications",
+                  Quickshell.env("HOME") + "/.local/share/applications"]
         
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text.includes(".desktop")) {
+        stdout: SplitParser {
+            onRead: line => {
+                if (line.includes(".desktop")) {
                     refreshApps()
                 }
             }
         }
     }
 
+    // Periodic fallback refresh
+    Timer {
+        interval: 60000 // Refresh every minute
+        running: true
+        repeat: true
+        onTriggered: refreshApps()
+    }
+
     function getDesktopApps() {
         return DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
+    }
+
+    function getPathExecutables(): var {
+        // Note: PATH executable scanning is disabled to avoid UI blocking
+        // To enable, replace this with proper async scanning implementation
+        return []
     }
 
     function refreshApps() {
@@ -46,23 +63,6 @@ Singleton {
                 }))
     }
 
-    function getPathExecutables(): var {
-        const result = Quickshell.execSync("bash", ["-c", "echo $PATH | tr ':' '\\n' | xargs -I {} find {} -maxdepth 1 -type f -executable 2>/dev/null | sort -u | head -200"]);
-        if (result.exitCode !== 0) return [];
-        
-        const executables = result.stdout.trim().split('\n').filter(path => path.length > 0);
-        return executables.map(path => {
-            const name = path.split('/').pop();
-            return {
-                name: name,
-                command: name,
-                execString: name,
-                isExecutable: true,
-                path: path
-            };
-        });
-    }
-
     function fuzzyQuery(search: string): var {
         return Fuzzy.go(search, preppedApps, {
             all: true,
@@ -72,12 +72,15 @@ Singleton {
     }
 
     function launch(entry: DesktopEntry): void {
-        if (entry.isExecutable) {
-            Quickshell.execDetached(["sh", "-c", `app2unit -- ${entry.command}`]);
-        } else if (entry.execString.startsWith("sh -c")) {
-            Quickshell.execDetached(["sh", "-c", `app2unit -- ${entry.execString}`]);
-        } else {
-            Quickshell.execDetached(["sh", "-c", `app2unit -- '${entry.id}.desktop' || app2unit -- ${entry.execString}`]);
+        try {
+            if (entry.isExecutable) {
+                Quickshell.execDetached(["sh", "-c", `app2unit -- "${entry.command}"`]);
+            } else {
+                const desktopId = entry.id || entry.execString
+                Quickshell.execDetached(["sh", "-c", `app2unit -- "${desktopId}"`]);
+            }
+        } catch (error) {
+            console.error("Failed to launch app:", entry.name, "Error:", error)
         }
     }
 }
