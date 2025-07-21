@@ -4,7 +4,7 @@
 include "/home/caseyw/.gtkrc-2.0.mine"
 gtk-theme-name="catppuccin-mocha-red-standard+default"
 gtk-icon-theme-name="Papirus-Dark"
-gtk-font-name="Adwaita Sans 11"
+gtk-font-name="JetBrains Mono 13"
 gtk-cursor-theme-name="Bibata-Modern-Amber"
 gtk-cursor-theme-size=24
 gtk-toolbar-style=GTK_TOOLBAR_ICONS
