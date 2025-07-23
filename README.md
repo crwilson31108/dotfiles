@@ -106,6 +106,11 @@ sudo pacman -S \
 yay -S \
   hyprland-git \
   hyprland-plugins \
+  hypridle \
+  hyprpicker \
+  hyprsunset \
+  quickshell \
+  cliphist \
   grimblast \
   wob \
   power-profiles-daemon \
@@ -138,6 +143,9 @@ hyprpm enable Hyprspace
 - **xdg-desktop-portal-hyprland** - Screen sharing and desktop integration
 - **hyprlock** - Screen locker
 - **hyprland-plugins** (AUR) - Additional functionality plugins
+- **hypridle** (AUR) - Idle management daemon
+- **hyprpicker** (AUR) - Color picker tool
+- **hyprsunset** (AUR) - Blue light filter
 - **Hyprspace** - Workspace overview plugin (via HyprPM)
 
 ### Terminal & Shell
@@ -166,7 +174,7 @@ hyprpm enable Hyprspace
 - **swappy** - Screenshot annotation
 - **grimblast** (AUR) - Enhanced screenshot utility
 - **wl-clipboard** - Clipboard utilities
-- **cliphist** - Clipboard manager
+- **cliphist** (AUR) - Clipboard manager with history
 - **brightnessctl** - Backlight control
 - **playerctl** - Media player control
 - **wob** (AUR) - Overlay bar for volume/brightness
@@ -205,6 +213,16 @@ hyprpm enable Hyprspace
 - **nwg-displays** - Display configuration
 - **xsettingsd** - X settings daemon for GTK
 - **swww** (AUR) - Wallpaper daemon
+
+### Quickshell Components
+- **quickshell** (AUR) - Modern Wayland shell with rich widgets and panels
+- **hypridle** (AUR) - Idle management for stay awake functionality
+- **hyprpicker** (AUR) - Color picker integration
+- **hyprsunset** (AUR) - Blue light filter control
+- **cliphist** (AUR) - Clipboard history management
+- **zenity** - Native file picker dialogs
+- **rofi-wayland** - Application launcher and clipboard interface
+- **inotify-tools** - File system monitoring for app list updates
 
 ### Development Tools
 - **neovim** - Text editor
@@ -251,6 +269,7 @@ cp -r fontconfig ~/.config/
 cp -r nwg-displays ~/.config/
 cp -r nwg-look ~/.config/
 cp -r Thunar ~/.config/
+cp -r quickshell ~/.config/
 # Copy GTK 2.0 files
 cp gtk-2.0/gtkrc ~/.gtkrc-2.0
 cp gtk-2.0/gtkrc.mine ~/.gtkrc-2.0.mine
@@ -273,7 +292,15 @@ chsh -s /usr/bin/fish
 fc-cache -fv
 ```
 
-6. Log out and log back in using Hyprland session.
+6. Set Chromium as the default browser for all applications:
+```bash
+# Set Chromium as the default handler for HTTP/HTTPS URLs
+xdg-mime default chromium.desktop x-scheme-handler/http
+xdg-mime default chromium.desktop x-scheme-handler/https
+xdg-mime default chromium.desktop text/html
+```
+
+7. Log out and log back in using Hyprland session.
 
 ## Font Configuration
 

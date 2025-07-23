@@ -5,7 +5,6 @@ import "./../../../utils"
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import QtQuick.Dialogs
 
 Row {
     id: root
@@ -31,11 +30,25 @@ Row {
             font.pointSize: Math.floor(info.implicitHeight / 2) || 1
         }
 
-        CachingImage {
+        Image {
             id: pfp
 
             anchors.fill: parent
-            path: `${Paths.home}/.face`
+            source: `${Paths.home}/.face`
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
+            mipmap: true
+            cache: false
+            
+            onStatusChanged: {
+                console.log("Avatar image status changed:", status);
+                if (status === Image.Error) {
+                    console.log("Avatar image failed to load from:", source);
+                }
+                if (status === Image.Ready) {
+                    console.log("Avatar image loaded successfully from:", source);
+                }
+            }
         }
 
         MouseArea {
@@ -45,8 +58,11 @@ Row {
             hoverEnabled: true
 
             onClicked: {
-                root.visibilities.launcher = false;
-                dialog.open();
+                root.visibilities.dashboard = false;
+                console.log("Launching avatar picker detached");
+                Quickshell.execDetached(["/home/caseyw/.config/quickshell/scripts/avatar-picker.sh"]);
+                // Start timer immediately since we can't track process completion
+                refreshTimer.start();
             }
 
             StyledRect {
@@ -104,15 +120,20 @@ Row {
             }
         }
 
-        FileDialog {
-            id: dialog
-
-            nameFilters: [`Image files (${Wallpapers.extensions.map(e => `*.${e}`).join(" ")})`]
-
-            onAccepted: {
-                Paths.copy(selectedFile, `${Paths.home}/.face`);
-                pfp.pathChanged();
-                Quickshell.execDetached(["notify-send", "-a", "quickshell", "-u", "low", "Profile picture changed", `Profile picture changed to ${Paths.strip(selectedFile)}`]);
+        
+        Timer {
+            id: refreshTimer
+            interval: 3000  // 3 seconds
+            repeat: false
+            onTriggered: {
+                console.log("Refreshing avatar after 3 seconds");
+                console.log("Current source before refresh:", pfp.source);
+                // Force refresh by temporarily clearing and resetting source
+                var currentSource = pfp.source;
+                pfp.source = "";
+                console.log("Source cleared");
+                pfp.source = currentSource;
+                console.log("Source reset to:", pfp.source);
             }
         }
     }

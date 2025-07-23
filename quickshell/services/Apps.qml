@@ -20,14 +20,16 @@ Singleton {
     // Monitor desktop application directories including Flatpak
     Process {
         running: true
-        command: ["inotifywait", "-m", "-e", "close_write,moved_to,create,delete", 
+        command: ["inotifywait", "-m", "-e", "close_write,moved_to,create,delete,modify", 
                   "/usr/share/applications", 
+                  "/usr/local/share/applications",
                   "/var/lib/flatpak/exports/share/applications",
                   Quickshell.env("HOME") + "/.local/share/applications"]
         
         stdout: SplitParser {
             onRead: line => {
                 if (line.includes(".desktop")) {
+                    console.log("Desktop file change detected:", line)
                     refreshApps()
                 }
             }
@@ -53,14 +55,20 @@ Singleton {
     }
 
     function refreshApps() {
-        desktopApps = getDesktopApps()
-        pathExecutables = getPathExecutables()
-        allApps = desktopApps.concat(pathExecutables)
-        preppedApps = allApps.map(a => ({
-                    name: Fuzzy.prepare(a.name || a.command),
-                    comment: Fuzzy.prepare(a.comment || a.command),
-                    entry: a
-                }))
+        // Force DesktopEntries to rescan
+        DesktopEntries.applications.populate()
+        // Small delay to ensure population completes
+        Qt.callLater(() => {
+            desktopApps = getDesktopApps()
+            pathExecutables = getPathExecutables()
+            allApps = desktopApps.concat(pathExecutables)
+            preppedApps = allApps.map(a => ({
+                        name: Fuzzy.prepare(a.name || a.command),
+                        comment: Fuzzy.prepare(a.comment || a.command),
+                        entry: a
+                    }))
+            console.log("Apps refreshed, total count:", allApps.length)
+        })
     }
 
     function fuzzyQuery(search: string): var {

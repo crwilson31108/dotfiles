@@ -89,6 +89,11 @@ Item {
             text: qsTr("Performance")
         }
 
+        Tab {
+            iconName: "construction"
+            text: qsTr("Toolbox")
+        }
+
         // Tab {
         //     iconName: "workspaces"
         //     text: qsTr("Workspaces")

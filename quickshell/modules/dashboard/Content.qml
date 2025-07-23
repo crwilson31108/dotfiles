@@ -66,7 +66,7 @@ Item {
 
                 const x = contentX - currentItem.x;
                 if (x > currentItem.implicitWidth / 2)
-                    root.state.currentTab = Math.min(root.state.currentTab + 1, tabs.count - 1);
+                    root.state.currentTab = Math.min(root.state.currentTab + 1, 3);
                 else if (x < -currentItem.implicitWidth / 2)
                     root.state.currentTab = Math.max(root.state.currentTab - 1, 0);
             }
@@ -74,7 +74,7 @@ Item {
             onDragEnded: {
                 const x = contentX - currentItem.x;
                 if (x > currentItem.implicitWidth / 10)
-                    root.state.currentTab = Math.min(root.state.currentTab + 1, tabs.count - 1);
+                    root.state.currentTab = Math.min(root.state.currentTab + 1, 3);
                 else if (x < -currentItem.implicitWidth / 10)
                     root.state.currentTab = Math.max(root.state.currentTab - 1, 0);
                 else
@@ -98,6 +98,12 @@ Item {
 
                 Pane {
                     sourceComponent: Performance {}
+                }
+
+                Pane {
+                    sourceComponent: Toolbox {
+                        visibilities: root.visibilities
+                    }
                 }
             }
 
