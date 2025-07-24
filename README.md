@@ -23,6 +23,7 @@ sudo pacman -S \
   hyprland \
   xdg-desktop-portal-hyprland \
   hyprlock \
+  foot \
   fish \
   thunar \
   thunar-volman \
@@ -148,7 +149,7 @@ hyprpm enable Hyprspace
 - **Hyprspace** - Workspace overview plugin (via HyprPM)
 
 ### Terminal & Shell
-- **alacritty** - GPU-accelerated terminal emulator
+- **foot** - Lightweight Wayland terminal emulator
 - **fish** - Friendly interactive shell
 
 ### Applications
@@ -277,7 +278,7 @@ cd dotfiles
 ```bash
 cp -r hypr ~/.config/
 cp -r waybar ~/.config/
-cp -r alacritty ~/.config/
+cp -r foot ~/.config/
 cp -r fish ~/.config/
 cp -r rofi ~/.config/
 cp -r mako ~/.config/
