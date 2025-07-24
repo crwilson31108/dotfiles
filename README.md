@@ -117,8 +117,7 @@ yay -S \
   swww \
   catppuccin-gtk-theme-mocha \
   bibata-cursor-theme \
-  greetd \
-  greetd-regreet
+  sddm
 ```
 
 ## Step 3: Papirus Icon Theme
@@ -196,8 +195,7 @@ hyprpm enable Hyprspace
 - **system-config-printer** - Printer configuration GUI
 
 ### Login Manager
-- **greetd** (AUR) - Minimal login manager
-- **greetd-regreet** (AUR) - GTK-based greeter for greetd
+- **sddm** - Simple Desktop Display Manager
 
 ### Theming & Appearance
 - **qt5ct** & **qt6ct** - Qt theming tools
@@ -242,6 +240,31 @@ hyprpm enable Hyprspace
 - Various system libraries (cairo, pango, etc.)
 - Desktop integration portals
 
+## Kernel Parameters for AMD Ryzen AI 370
+
+For optimal performance and to suppress ACPI errors on AMD Ryzen AI 9 HX 370 systems, add these kernel parameters to your bootloader:
+
+### Systemd-boot Configuration
+
+Edit `/boot/loader/entries/linux-cachyos.conf` (or your kernel's entry file):
+
+```
+title Linux Cachyos
+options root=UUID=YOUR-ROOT-UUID rw zswap.enabled=0 nowatchdog splash quiet loglevel=3 amd_pstate=active iommu=pt amd_iommu=on acpi_osi="Linux"
+linux /vmlinuz-linux-cachyos
+initrd /initramfs-linux-cachyos.img
+```
+
+### Parameter Explanations
+
+- `quiet loglevel=3` - Suppresses non-critical boot messages including ACPI errors
+- `amd_pstate=active` - Enables active AMD P-State driver for better power management on Zen 5
+- `iommu=pt` - IOMMU passthrough mode for better performance
+- `amd_iommu=on` - Enables AMD IOMMU support
+- `acpi_osi="Linux"` - Better ACPI compatibility for modern hardware
+
+These parameters are specifically optimized for the AMD Ryzen AI 370 (Zen 5) architecture and will improve sleep/standby functionality.
+
 ## Post-Installation
 
 1. Clone this dotfiles repository:
@@ -275,24 +298,33 @@ cp gtk-2.0/gtkrc ~/.gtkrc-2.0
 cp gtk-2.0/gtkrc.mine ~/.gtkrc-2.0.mine
 ```
 
-3. Enable necessary services:
+3. Copy SDDM configuration if it exists:
+```bash
+# Backup SDDM config to dotfiles
+if [ -f /etc/sddm.conf ]; then
+    sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
+fi
+```
+
+4. Enable necessary services:
 ```bash
 systemctl --user enable pipewire pipewire-pulse wireplumber
 sudo systemctl enable --now upower
 sudo systemctl enable --now cups
+sudo systemctl enable sddm  # Enable SDDM display manager
 ```
 
-4. Set fish as default shell:
+5. Set fish as default shell:
 ```bash
 chsh -s /usr/bin/fish
 ```
 
-5. Rebuild the font cache:
+6. Rebuild the font cache:
 ```bash
 fc-cache -fv
 ```
 
-6. Set Chromium as the default browser for all applications:
+7. Set Chromium as the default browser for all applications:
 ```bash
 # Set Chromium as the default handler for HTTP/HTTPS URLs
 xdg-mime default chromium.desktop x-scheme-handler/http
@@ -300,7 +332,7 @@ xdg-mime default chromium.desktop x-scheme-handler/https
 xdg-mime default chromium.desktop text/html
 ```
 
-7. Log out and log back in using Hyprland session.
+8. Log out and log back in using Hyprland session.
 
 ## Font Configuration
 
@@ -328,68 +360,31 @@ This setup includes optimized font rendering for high-DPI displays with:
 
 The configuration ensures consistent, crisp font rendering across all applications.
 
-## Login Manager Setup (greetd/regreet)
+## Login Manager Setup
 
-### Configuration
-1. Enable greetd service:
+### SDDM Configuration (Recommended)
+
+1. Install and enable SDDM:
 ```bash
-sudo systemctl enable greetd
+sudo pacman -S sddm
+sudo systemctl enable sddm
 ```
 
-2. Configure greetd to use regreet:
+2. Configure SDDM autologin (optional):
+Create or edit `/etc/sddm.conf`:
+```ini
+[Autologin]
+User=yourusername
+Session=hyprland
+```
+
+To disable autologin later, comment out these lines with `#`.
+
+3. Copy SDDM configuration to dotfiles for backup:
 ```bash
-sudo cp /etc/greetd/config.toml /etc/greetd/config.toml.backup
+sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
 ```
 
-3. Edit `/etc/greetd/config.toml`:
-```toml
-[terminal]
-vt = 7
-
-[default_session]
-command = "sh -c 'exec </dev/null >/dev/null 2>&1; Hyprland --config /etc/greetd/hyprland.conf'"
-user = "greeter"
-```
-
-4. Create `/etc/greetd/hyprland.conf`:
-```
-exec-once = regreet; hyprctl dispatch exit
-misc {
-    disable_hyprland_logo = true
-    disable_splash_rendering = true
-    disable_hyprland_qtutils_check = true
-}
-```
-
-5. Configure regreet theme in `/etc/greetd/regreet.toml`:
-```toml
-[background]
-path = "/usr/share/backgrounds/greeter.jpg"
-fit = "Cover"
-
-[GTK]
-application_prefer_dark_theme = true
-cursor_theme_name = "Bibata-Modern-Ice"
-font_name = "JetBrains Mono 14"
-icon_theme_name = "Papirus-Dark"
-theme_name = "catppuccin-mocha-red-standard+default"
-
-[commands]
-reboot = [ "systemctl", "reboot" ]
-poweroff = [ "systemctl", "poweroff" ]
-
-[appearance]
-greeting_msg = "Welcome to Hyprland"
-
-[widget.clock]
-format = "%a %H:%M"
-resolution = "1s"
-```
-
-6. For silent boot (optional), add to kernel parameters:
-```
-quiet loglevel=0
-```
 
 ## Key Bindings
 
