@@ -8,67 +8,91 @@ import QtQuick
 Singleton {
     id: root
 
-    property list<DesktopEntry> desktopApps: getDesktopApps()
-    property list<var> pathExecutables: getPathExecutables()
-    property list<var> allApps: desktopApps.concat(pathExecutables)
-    property list<var> preppedApps: allApps.map(a => ({
-                name: Fuzzy.prepare(a.name || a.command),
-                comment: Fuzzy.prepare(a.comment || a.command),
-                entry: a
-            }))
+    property list<var> allApps: []
+    property list<var> preppedApps: []
+    property string dbPath: Quickshell.env("HOME") + "/.cache/quickshell/apps.json"
 
-    // Monitor desktop application directories including Flatpak
+    // Manual refresh process - the only way to update the database
     Process {
-        running: true
-        command: ["inotifywait", "-m", "-e", "close_write,moved_to,create,delete,modify", 
-                  "/usr/share/applications", 
-                  "/usr/local/share/applications",
-                  "/var/lib/flatpak/exports/share/applications",
-                  Quickshell.env("HOME") + "/.local/share/applications"]
+        id: manualRefreshProc
+        command: [Quickshell.env("HOME") + "/.config/quickshell/scripts/refresh-launcher.sh"]
         
-        stdout: SplitParser {
-            onRead: line => {
-                if (line.includes(".desktop")) {
-                    console.log("Desktop file change detected:", line)
-                    refreshApps()
-                }
-            }
+        onExited: (exitCode, exitStatus) => {
+            loadAppsFromDatabase()
         }
     }
 
-    // Periodic fallback refresh
-    Timer {
-        interval: 60000 // Refresh every minute
-        running: true
-        repeat: true
-        onTriggered: refreshApps()
+    // Process to read database file with simpler approach
+    Process {
+        id: readProc
+        command: ["sh", "-c", `cat "${root.dbPath}" 2>/dev/null || echo "FILE_NOT_FOUND"`]
+        
+        stdout: SplitParser {
+            onRead: data => {
+                if (!root.dbContent) root.dbContent = ""
+                root.dbContent += data
+            }
+        }
+        
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0 && root.dbContent && root.dbContent !== "FILE_NOT_FOUND") {
+                parseDatabase(root.dbContent)
+            } else {
+                manualRefresh()
+            }
+            root.dbContent = "" // Clear for next read
+        }
+    }
+    
+    property string dbContent: ""
+
+    Component.onCompleted: {
+        loadAppsFromDatabase()
     }
 
-    function getDesktopApps() {
-        return DesktopEntries.applications.values.filter(a => !a.noDisplay).sort((a, b) => a.name.localeCompare(b.name))
+    function loadAppsFromDatabase() {
+        readProc.running = true
     }
 
-    function getPathExecutables(): var {
-        // Note: PATH executable scanning is disabled to avoid UI blocking
-        // To enable, replace this with proper async scanning implementation
-        return []
-    }
-
-    function refreshApps() {
-        // Force DesktopEntries to rescan
-        DesktopEntries.applications.populate()
-        // Small delay to ensure population completes
-        Qt.callLater(() => {
-            desktopApps = getDesktopApps()
-            pathExecutables = getPathExecutables()
-            allApps = desktopApps.concat(pathExecutables)
-            preppedApps = allApps.map(a => ({
-                        name: Fuzzy.prepare(a.name || a.command),
-                        comment: Fuzzy.prepare(a.comment || a.command),
-                        entry: a
-                    }))
-            console.log("Apps refreshed, total count:", allApps.length)
-        })
+    function parseDatabase(dbFile) {
+        if (dbFile) {
+            try {
+                const apps = JSON.parse(dbFile)
+                // Convert JSON objects to app entries compatible with launcher UI and sort alphabetically
+                allApps = apps.map(app => ({
+                    // Core properties the UI expects
+                    name: app.name || "",
+                    icon: app.icon || "",
+                    comment: app.comment || "",
+                    genericName: app.genericName || "",
+                    
+                    // Launch properties
+                    id: app.id || "",
+                    command: app.exec || "",
+                    execString: app.exec || "",
+                    isExecutable: false,
+                    
+                    // Additional metadata
+                    categories: app.categories || "",
+                    desktopFile: app.desktopFile || "",
+                    noDisplay: false
+                })).sort((a, b) => a.name.localeCompare(b.name))
+                
+                // Prepare for fuzzy search
+                preppedApps = allApps.map(a => ({
+                    name: Fuzzy.prepare(a.name || a.command),
+                    comment: Fuzzy.prepare(a.comment || a.command),
+                    entry: a
+                }))
+                
+            } catch (error) {
+                console.error("Failed to parse apps database:", error)
+                allApps = []
+                preppedApps = []
+            }
+        } else {
+            console.error("Database file content is empty")
+        }
     }
 
     function fuzzyQuery(search: string): var {
@@ -79,13 +103,28 @@ Singleton {
         }).map(r => r.obj.entry);
     }
 
-    function launch(entry: DesktopEntry): void {
+    function manualRefresh(): void {
+        manualRefreshProc.running = true
+    }
+    
+    // Legacy function for backward compatibility
+    function refreshApps(): void {
+        manualRefresh()
+    }
+
+    function launch(entry): void {
         try {
+            const execCmd = entry.command || entry.execString || entry.id
+            
             if (entry.isExecutable) {
-                Quickshell.execDetached(["sh", "-c", `app2unit -- "${entry.command}"`]);
+                Quickshell.execDetached(["sh", "-c", `app2unit -- "${execCmd}"`]);
             } else {
-                const desktopId = entry.id || entry.execString
-                Quickshell.execDetached(["sh", "-c", `app2unit -- "${desktopId}"`]);
+                // For complex commands (like flatpak), execute directly without app2unit
+                if (execCmd.includes("flatpak run") || execCmd.includes("snap run")) {
+                    Quickshell.execDetached(["sh", "-c", execCmd]);
+                } else {
+                    Quickshell.execDetached(["sh", "-c", `app2unit -- "${execCmd}"`]);
+                }
             }
         } catch (error) {
             console.error("Failed to launch app:", entry.name, "Error:", error)

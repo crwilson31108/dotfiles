@@ -41,7 +41,6 @@ Singleton {
 
     function setWallpaper(path: string): void {
         actualCurrent = path;
-        Quickshell.execDetached([`${StandardPaths.writableLocation(StandardPaths.ConfigLocation)}/quickshell/scripts/set-wallpaper.sh`, path]);
     }
 
     function setRandomWallpaper(): void {
@@ -106,10 +105,6 @@ Singleton {
         onLoaded: {
             root.actualCurrent = text().trim();
             root.previewColourLock = false;
-            // Restore wallpaper on quickshell startup/reload
-            if (root.actualCurrent && root.actualCurrent !== "") {
-                Quickshell.execDetached(["swww", "img", root.actualCurrent, "--transition-type", "fade", "--transition-duration", "1"]);
-            }
         }
     }
 

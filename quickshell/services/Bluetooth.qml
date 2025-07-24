@@ -57,10 +57,10 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const devices = text.trim().split("\n\n").map(d => ({
-                            name: d.match(/Name: (.*)/)[1],
-                            alias: d.match(/Alias: (.*)/)[1],
-                            address: d.match(/Device ([0-9A-Z:]{17})/)[1],
-                            icon: d.match(/Icon: (.*)/)[1],
+                            name: d.match(/Name: (.*)/)?.at(1) || "",
+                            alias: d.match(/Alias: (.*)/)?.at(1) || "",
+                            address: d.match(/Device ([0-9A-Z:]{17})/)?.at(1) || "",
+                            icon: d.match(/Icon: (.*)/)?.at(1) || "",
                             connected: d.includes("Connected: yes"),
                             paired: d.includes("Paired: yes"),
                             trusted: d.includes("Trusted: yes")

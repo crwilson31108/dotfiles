@@ -38,11 +38,9 @@ Singleton {
                             _actualDPI = diagonalPixels / diagonalInches;
                         }
                         
-                        console.log("ScalingDetector: Hyprland scale factor:", _scaleFactor, "DPI:", _actualDPI);
                         return;
                     }
                 } catch (e) {
-                    console.log("ScalingDetector: Failed to parse Hyprland monitors:", e);
                 }
                 
                 // Fallback to environment variables
@@ -61,7 +59,6 @@ Singleton {
         
         _scaleFactor = Math.max(qtScale, gdkScale);
         
-        console.log("ScalingDetector: Fallback detection - scale factor:", _scaleFactor);
     }
 
     // Helper functions for scaled values

@@ -67,6 +67,7 @@ MouseArea {
     onPositionChanged: event => {
         const x = event.x;
         const y = event.y;
+        
 
         // Show osd on hover - custom right-side trigger for horizontal bar
         const rightEdgeStart = root.width - 100; // Trigger area 100px from right edge
@@ -85,8 +86,22 @@ MouseArea {
         }
 
 
-        // Show dashboard on hover
-        const showDashboard = inBottomPanel(panels.dashboard, x, y);
+        
+        // Show dashboard on hover - bottom edge trigger OR content hover
+        const bottomEdgeStart = root.height - 100 - Config.border.thickness;
+        const dashboardPanelLeft = panels.dashboard.x || 0;
+        const dashboardPanelRight = (panels.dashboard.x || 0) + (panels.dashboard.width || root.width);
+        
+        // Bottom edge trigger
+        const bottomEdgeTrigger = y >= bottomEdgeStart && x >= dashboardPanelLeft && x <= dashboardPanelRight;
+        
+        // Dashboard content hover (when visible) - use expanded area to catch tab zones
+        const dashboardContentTrigger = visibilities.dashboard && 
+            y >= panels.dashboard.y && y <= root.height - Config.border.thickness && // Extend to bottom edge
+            x >= panels.dashboard.x && x <= (panels.dashboard.x + panels.dashboard.width);
+        
+        const showDashboard = bottomEdgeTrigger || dashboardContentTrigger;
+        
 
         // Always update visibility based on hover if not in shortcut mode
         if (!dashboardShortcutActive) {
@@ -134,7 +149,17 @@ MouseArea {
                 root.osdShortcutActive = false;
 
                 // Also hide dashboard and OSD if they're not being hovered
-                const inDashboardArea = root.inBottomPanel(root.panels.dashboard, root.mouseX, root.mouseY);
+                const bottomEdgeStart = root.height - 100 - Config.border.thickness;
+                const dashboardPanelLeft = root.panels.dashboard.x || 0;
+                const dashboardPanelRight = (root.panels.dashboard.x || 0) + (root.panels.dashboard.width || root.width);
+                
+                // Check both bottom edge and dashboard content - extend to bottom edge
+                const bottomEdgeTrigger = root.mouseY >= bottomEdgeStart && root.mouseX >= dashboardPanelLeft && root.mouseX <= dashboardPanelRight;
+                const dashboardContentTrigger = root.visibilities.dashboard && 
+                    root.mouseY >= root.panels.dashboard.y && root.mouseY <= root.height - Config.border.thickness &&
+                    root.mouseX >= root.panels.dashboard.x && root.mouseX <= (root.panels.dashboard.x + root.panels.dashboard.width);
+                
+                const inDashboardArea = bottomEdgeTrigger || dashboardContentTrigger;
                 const inOsdArea = root.inRightPanel(root.panels.osd, root.mouseX, root.mouseY);
 
                 if (!inDashboardArea) {

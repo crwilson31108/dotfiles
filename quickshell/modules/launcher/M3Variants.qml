@@ -87,7 +87,6 @@ Singleton {
             list.visibilities.launcher = false;
             // Variant setting disabled - no longer using caelestia
             // Quickshell.execDetached(["caelestia", "scheme", "set", "-v", variant]);
-            console.log(`Would set variant: ${variant}`);
         }
     }
 }

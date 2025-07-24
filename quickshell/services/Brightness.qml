@@ -34,7 +34,6 @@ Singleton {
 
     onMonitorsChanged: {
         ddcMonitors = [];
-        ddcProc.running = true;
     }
 
     Variants {
@@ -45,16 +44,8 @@ Singleton {
         Monitor {}
     }
 
-    Process {
-        id: ddcProc
-
-        command: ["ddcutil", "detect", "--brief"]
-        stdout: StdioCollector {
-            onStreamFinished: root.ddcMonitors = text.trim().split("\n\n").filter(d => d.startsWith("Display ")).map(d => ({
-                        model: d.match(/Monitor:.*:(.*):.*/)[1],
-                        busNum: d.match(/I2C bus:[ ]*\/dev\/i2c-([0-9]+)/)[1]
-                    }))
-        }
+    Component.onCompleted: {
+        root.ddcMonitors = []
     }
 
     Process {

@@ -155,7 +155,7 @@ Singleton {
     // Rebuild cache when apps change
     Connections {
         target: Apps
-        function onDesktopAppsChanged() {
+        function onAllAppsChanged() {
             buildInitialCache();
         }
     }
@@ -165,7 +165,7 @@ Singleton {
         const newIconCache = {};
         
         // Build cache from desktop entries
-        for (const app of Apps.desktopApps) {
+        for (const app of Apps.allApps) {
             if (!app) continue;
             
             // Extract possible window classes from the desktop entry

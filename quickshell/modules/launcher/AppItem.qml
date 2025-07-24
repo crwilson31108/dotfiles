@@ -8,7 +8,7 @@ import QtQuick
 Item {
     id: root
 
-    required property DesktopEntry modelData
+    required property var modelData
     required property PersistentProperties visibilities
 
     implicitHeight: Config.launcher.sizes.itemHeight

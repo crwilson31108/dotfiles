@@ -41,12 +41,9 @@ Row {
             cache: false
             
             onStatusChanged: {
-                console.log("Avatar image status changed:", status);
                 if (status === Image.Error) {
-                    console.log("Avatar image failed to load from:", source);
                 }
                 if (status === Image.Ready) {
-                    console.log("Avatar image loaded successfully from:", source);
                 }
             }
         }
@@ -59,7 +56,6 @@ Row {
 
             onClicked: {
                 root.visibilities.dashboard = false;
-                console.log("Launching avatar picker detached");
                 Quickshell.execDetached(["/home/caseyw/.config/quickshell/scripts/avatar-picker.sh"]);
                 // Start timer immediately since we can't track process completion
                 refreshTimer.start();
@@ -126,14 +122,10 @@ Row {
             interval: 3000  // 3 seconds
             repeat: false
             onTriggered: {
-                console.log("Refreshing avatar after 3 seconds");
-                console.log("Current source before refresh:", pfp.source);
                 // Force refresh by temporarily clearing and resetting source
                 var currentSource = pfp.source;
                 pfp.source = "";
-                console.log("Source cleared");
                 pfp.source = currentSource;
-                console.log("Source reset to:", pfp.source);
             }
         }
     }

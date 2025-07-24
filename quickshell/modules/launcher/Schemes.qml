@@ -65,7 +65,6 @@ Singleton {
             list.visibilities.launcher = false;
             // Scheme setting disabled - no longer using caelestia
             // Quickshell.execDetached(["caelestia", "scheme", "set", "-n", name, "-f", flavour]);
-            console.log(`Would set scheme: ${name} ${flavour}`);
         }
     }
 }

@@ -83,7 +83,6 @@ ColumnLayout {
         interval: 500  // Wait 500ms for drawer to close completely
         repeat: false
         onTriggered: {
-            console.log("Timer triggered, launching color picker")
             // Use sh -c to launch without Process reinitialization
             quickLauncherProc.command = ["sh", "-c", "hyprpicker -a &"]
             quickLauncherProc.running = true
@@ -95,7 +94,6 @@ ColumnLayout {
         interval: 500  // Wait 500ms for drawer to close completely
         repeat: false
         onTriggered: {
-            console.log("Screenshot timer triggered")
             // Launch screenshot with drawer closed
             quickLauncherProc.command = ["sh", "-c", "grim -g \"$(slurp)\" - | swappy -f - &"]
             quickLauncherProc.running = true
@@ -107,7 +105,6 @@ ColumnLayout {
         interval: 500  // Wait 500ms for drawer to close completely
         repeat: false
         onTriggered: {
-            console.log("Clipboard timer triggered")
             // Launch clipboard rofi selector
             clipboardRofiProc.running = true
         }
@@ -152,7 +149,6 @@ ColumnLayout {
                     text: qsTr("Stay Awake")
                     active: root.caffeineActive
                     onClicked: {
-                        console.log("Stay Awake clicked, current state:", root.caffeineActive)
                         if (root.caffeineActive) {
                             // Enable hypridle again
                             hypridleStartProc.running = true
@@ -169,7 +165,6 @@ ColumnLayout {
                     iconName: "screenshot"
                     text: qsTr("Screenshot")
                     onClicked: {
-                        console.log("Screenshot clicked")
                         // Close drawer first, then wait for it to close
                         root.visibilities.dashboard = false
                         // Use timer to wait for drawer animation to complete
@@ -183,7 +178,6 @@ ColumnLayout {
                     text: qsTr("Night Shift")
                     active: root.nightShiftActive
                     onClicked: {
-                        console.log("Night Shift clicked, current state:", root.nightShiftActive)
                         if (root.nightShiftActive) {
                             // Turn off - reset to identity
                             nightShiftDisableProc.running = true
@@ -199,7 +193,6 @@ ColumnLayout {
                     iconName: "colorize"
                     text: qsTr("Color Picker")
                     onClicked: {
-                        console.log("Color Picker clicked")
                         // Close drawer first, then wait for it to close
                         root.visibilities.dashboard = false
                         // Use timer to wait for drawer animation to complete
@@ -212,7 +205,6 @@ ColumnLayout {
                     iconName: "content_paste"
                     text: qsTr("Clipboard")
                     onClicked: {
-                        console.log("Clipboard clicked")
                         // Close drawer first, then wait for it to close
                         root.visibilities.dashboard = false
                         // Use timer to wait for drawer animation to complete

@@ -77,7 +77,6 @@ Scope {
                         // If it's currently true, set to false
                         // If it's currently false or undefined, set to true
                         visibilities[drawer] = visibilities[drawer] ? false : true;
-                        console.log(`[IPC] Overview toggled to: ${visibilities[drawer]}`);
                     } else {
                         visibilities[drawer] = !visibilities[drawer];
                     }

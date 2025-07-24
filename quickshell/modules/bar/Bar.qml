@@ -34,11 +34,8 @@ Item {
 
         const cx = clock.x - spacing / 2;
 
-        console.log("checkPopout: mouse at x =", x);
-        console.log("checkPopout: ranges - network:", nx, "to", nx + n.implicitWidth + spacing, "bluetooth:", bls, "to", ble, "battery:", bx, "to", bx + b.implicitWidth + spacing, "clock:", cx, "to", cx + clock.implicitWidth + spacing);
 
         if (x >= awx && x <= awx + aw.implicitWidth) {
-            console.log("MATCHED: activewindow");
             popouts.currentName = "activewindow";
             popouts.currentCenter = Qt.binding(() => activeWindow.x + aw.x + aw.implicitWidth / 2);
             popouts.hasCurrent = true;
@@ -50,27 +47,22 @@ Item {
             popouts.currentCenter = Qt.binding(() => tray.x + item.x + item.implicitWidth / 2);
             popouts.hasCurrent = true;
         } else if (x >= nx && x <= nx + n.implicitWidth + spacing) {
-            console.log("MATCHED: network");
             popouts.currentName = "network";
             popouts.currentCenter = Qt.binding(() => statusIcons.x + statusIconsInner.x + n.x + n.implicitWidth / 2);
             popouts.hasCurrent = true;
         } else if (x >= bls && x <= ble) {
-            console.log("MATCHED: bluetooth");
             popouts.currentName = "bluetooth";
             popouts.currentCenter = Qt.binding(() => statusIcons.x + statusIconsInner.x + statusIconsInner.bs + (statusIconsInner.be - statusIconsInner.bs) / 2);
             popouts.hasCurrent = true;
         } else if (x >= bx && x <= bx + b.implicitWidth + spacing) {
-            console.log("MATCHED: battery");
             popouts.currentName = "battery";
             popouts.currentCenter = Qt.binding(() => statusIcons.x + statusIconsInner.x + b.x + b.implicitWidth / 2);
             popouts.hasCurrent = true;
         } else if (x >= cx && x <= cx + clock.implicitWidth + spacing) {
-            console.log("MATCHED: calendar");
             popouts.currentName = "calendar";
             popouts.currentCenter = Qt.binding(() => clock.x + clock.implicitWidth / 2);
             popouts.hasCurrent = true;
         } else {
-            console.log("checkPopout: no match found, setting hasCurrent = false");
             popouts.hasCurrent = false;
         }
     }

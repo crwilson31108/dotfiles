@@ -39,9 +39,14 @@ Singleton {
         const colours = isPreview ? preview : current;
         const scheme = JSON.parse(data);
 
+        // Skip if empty or invalid scheme
+        if (!scheme || !scheme.colours) {
+            return;
+        }
+
         if (!isPreview) {
-            root.scheme = scheme.name;
-            flavour = scheme.flavour;
+            root.scheme = scheme.name || "";
+            flavour = scheme.flavour || "";
         }
 
         light = scheme.mode === "light";
@@ -56,7 +61,6 @@ Singleton {
     function setMode(mode: string): void {
         // Color scheme switching disabled - no longer using caelestia
         // Quickshell.execDetached(["caelestia", "scheme", "set", "--notify", "-m", mode]);
-        console.log("Color scheme switching not implemented");
     }
 
     FileView {
