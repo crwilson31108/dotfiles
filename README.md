@@ -1,20 +1,39 @@
-# Hyprland Dotfiles
+# 🚀 Hyprland Dotfiles
 
-A complete Hyprland setup with quickshell, foot terminal, and Firefox.
+A complete Hyprland setup with Quickshell widgets, foot terminal, fish shell with Starship prompt, and Rose Pine theming throughout. Inspired by end-4's aesthetic with custom optimizations.
 
-This guide provides a complete list of all packages required to replicate this Hyprland setup on Arch Linux.
+## ✨ Features
 
-## Prerequisites
+- **Hyprland** window manager with optimized configuration
+- **Quickshell** modern desktop widgets and panels
+- **Fish shell** with **Starship** prompt (Rose Pine theme)
+- **Rose Pine** color scheme throughout the system
+- **Automated silent installation** - no user prompts required
+- **Comprehensive backup system** for existing configurations
+- **One-command setup** with sane defaults
 
-Install `yay` for AUR packages:
+## 🔧 Quick Installation (Recommended)
+
 ```bash
-sudo pacman -S --needed git base-devel
-git clone https://aur.archlinux.org/yay.git
-cd yay
-makepkg -si
+git clone https://github.com/crwilson31108/dotfiles.git
+cd dotfiles
+./install.sh
 ```
 
-## Installation Steps
+That's it! The script will:
+- **Automatically resolve package conflicts** (VS Code, Discord, etc.)
+- Install all required packages automatically
+- Backup your existing configurations
+- Deploy the dotfiles with optimized settings
+- Set up services and permissions
+- Configure shell with Starship prompt
+- **Auto-configure display manager** for seamless login
+- **Download sample wallpapers** and create keybind reference
+- **Apply hardware-specific optimizations** (NVIDIA/AMD)
+
+After installation, simply **reboot** and select **Hyprland** at your login screen.
+
+## 📋 Manual Installation Steps
 
 ### Step 1: Install Core Packages from Official Repositories
 
@@ -430,9 +449,56 @@ sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
 - `XF86AudioPlay/Next/Previous` - Media playback
 - `XF86MonBrightnessUp/Down` - Brightness control
 
+## 🔧 Troubleshooting
+
+### Check for Package Conflicts
+```bash
+./check-conflicts.sh
+```
+This script identifies common package conflicts (VS Code, Discord, Firefox variants) and orphaned packages.
+
+### Common Issues
+
+**Installation fails with package conflicts:**
+- Run `./check-conflicts.sh` to identify conflicts
+- The install script automatically resolves most conflicts
+- Manually remove conflicting packages: `yay -R package-name`
+
+**Hyprland doesn't appear at login screen:**
+- Verify SDDM is running: `systemctl status sddm`
+- Check session file exists: `ls /usr/share/wayland-sessions/hyprland.desktop`
+- Try different display manager: `sudo systemctl disable sddm && sudo systemctl enable gdm`
+
+**Applications don't launch:**
+- Check if XDG portals are working: `systemctl --user status xdg-desktop-portal-hyprland`
+- Verify environment variables in `~/.config/hypr/hyprland.conf`
+
+**Poor performance:**
+- NVIDIA users: Install `nvidia-dkms` and reboot
+- AMD users: Enable early KMS in `/etc/mkinitcpio.conf`
+- Check hardware optimizations were applied: `ls ~/.config/hypr/nvidia.conf` or `ls ~/.config/hypr/amd.conf`
+
+### Recovery Options
+
+**Restore previous configuration:**
+```bash
+./uninstall.sh
+```
+
+**Clean installation (removes all configs):**
+```bash
+rm -rf ~/.config/hypr ~/.config/quickshell ~/.config/foot
+./install.sh
+```
+
+**Update configurations:**
+```bash
+./sync_configs.sh
+```
+
 ## Notes
 
-- Some packages may have different names depending on your Arch repository
-- The `hyprland-plugins` package may need specific plugin names
-- Ensure your GPU drivers are properly installed for Wayland support
-- You may need to configure some applications after installation
+- Package conflicts are automatically resolved during installation
+- Hardware-specific optimizations are applied automatically
+- Sample wallpapers and keybind reference are created on Desktop
+- All original configurations are backed up with timestamps
