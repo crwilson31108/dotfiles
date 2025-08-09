@@ -1,6 +1,6 @@
 #!/bin/bash
-# Simple wallpaper setter using swww
-# Replaces caelestia wallpaper functionality
+# Simple wallpaper state saver for quickshell
+# Quickshell handles wallpaper display internally
 
 WALLPAPER="$1"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/quickshell/wallpaper"
@@ -17,9 +17,6 @@ if [ ! -f "$WALLPAPER" ]; then
     echo "Error: Wallpaper file not found: $WALLPAPER"
     exit 1
 fi
-
-# Set wallpaper using swww
-swww img "$WALLPAPER" --transition-type fade --transition-duration 1
 
 # Save current wallpaper path
 echo "$WALLPAPER" > "$STATE_DIR/path.txt"

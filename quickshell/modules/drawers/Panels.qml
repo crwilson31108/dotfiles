@@ -8,6 +8,7 @@ import "./../dashboard" as Dashboard
 import "./../windowswitcher" as WindowSwitcherModule
 import "./../overview" as Overview
 import "./../bar/popouts" as BarPopouts
+import "./../powermenu"
 import Quickshell
 import QtQuick
 
@@ -42,7 +43,6 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: session.width
     }
 
     Notifications.Wrapper {
@@ -117,4 +117,5 @@ Item {
         }
         y: isDetached ? (root.height - nonAnimHeight) / 2 : 0
     }
+
 }

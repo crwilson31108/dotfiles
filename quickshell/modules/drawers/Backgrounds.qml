@@ -26,7 +26,7 @@ Shape {
     Osd.Background {
         wrapper: panels.osd
 
-        startX: root.width - panels.session.width
+        startX: root.width
         startY: (root.height - wrapper.height) / 2 - rounding
     }
 
