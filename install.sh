@@ -233,11 +233,29 @@ install_packages() {
     )
     
     # GUI applications and tools
+    # Thunar requires GVfs for mounting, udisks2 for disk management,
+    # tumbler for thumbnails, and a polkit agent for permissions
     local gui_packages=(
         "thunar"
-        "thunar-volman"
-        "thunar-archive-plugin"
-        "file-roller"
+        "thunar-volman"          # Auto-mount and manage volumes
+        "thunar-archive-plugin"  # Archive integration
+        "thunar-media-tags-plugin" # Audio file tag editor
+        "file-roller"            # Archive manager
+        "gvfs"                   # Virtual filesystem for mounting
+        "gvfs-mtp"               # Android/media players
+        "gvfs-gphoto2"           # Digital cameras
+        "gvfs-afc"               # iOS devices
+        "gvfs-smb"               # Samba/Windows shares
+        "gvfs-nfs"               # NFS shares
+        "udisks2"                # Disk management service
+        "tumbler"                # Thumbnail service
+        "ffmpegthumbnailer"      # Video thumbnails
+        "poppler-glib"           # PDF thumbnails
+        "libgsf"                 # ODF thumbnails
+        "libopenraw"             # RAW image thumbnails
+        "webkit2gtk-4.1"         # HTML thumbnails
+        "evince"                 # PDF viewer with thumbnailer
+        "ristretto"              # Lightweight image viewer
         "firefox"
         "code"
         "discord"
@@ -264,6 +282,8 @@ install_packages() {
         "tesseract"
         "tesseract-data-eng"
         "wf-recorder"
+        "webp-pixbuf-loader"     # WebP image support
+        "libheif"                # HEIF/HEIC image support
     )
     
     # Fonts and themes (enhanced with end-4's selections)
@@ -292,7 +312,7 @@ install_packages() {
         "bluez-utils"
         "blueman"
         "brightnessctl"
-        "polkit-kde-agent"
+        "polkit-gnome"
         "xdg-desktop-portal"
         "xdg-desktop-portal-kde"
         "xdg-desktop-portal-gtk"
@@ -318,6 +338,9 @@ install_packages() {
         "bibata-cursor-theme"
         "rofi-lbonn-wayland"
         "rofimoji"
+        "udiskie"
+        "gnome-epub-thumbnailer" # EPUB thumbnails
+        "foliate"                # Modern ebook reader
     )
     
     # Install packages with better error handling
@@ -449,6 +472,31 @@ deploy_configs() {
     log_success "Configuration files deployed"
 }
 
+# Setup Thunar mounting support
+setup_thunar_mounting() {
+    log_section "THUNAR MOUNTING SUPPORT"
+    
+    # Create autostart configuration for Hyprland
+    local autostart_file="$USER_CONFIG/hypr/autostart.conf"
+    
+    log_info "Setting up autostart services for mounting..."
+    
+    # Create or append to autostart.conf
+    cat >> "$autostart_file" << 'EOF'
+
+# Thunar mounting support
+exec-once = /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec-once = udiskie --automount --notify --tray &
+EOF
+    
+    # Ensure autostart.conf is sourced in main hyprland.conf
+    if [ -f "$USER_CONFIG/hypr/hyprland.conf" ] && ! grep -q "autostart.conf" "$USER_CONFIG/hypr/hyprland.conf"; then
+        echo "source = ~/.config/hypr/autostart.conf" >> "$USER_CONFIG/hypr/hyprland.conf"
+    fi
+    
+    log_success "Thunar mounting support configured"
+}
+
 # Setup shell
 setup_shell() {
     log_section "SHELL CONFIGURATION"
@@ -487,6 +535,10 @@ setup_services() {
     # Enable Bluetooth
     log_info "Enabling Bluetooth service..."
     sudo systemctl enable bluetooth --now 2>/dev/null || true
+    
+    # Enable udisks2 for mounting
+    log_info "Enabling udisks2 service for mounting..."
+    sudo systemctl enable udisks2 --now 2>/dev/null || true
     
     # Create XDG user directories
     log_info "Creating XDG user directories..."
@@ -739,6 +791,7 @@ print_completion() {
     ║  ✅ Display manager auto-configured (SDDM)                      ║
     ║  ✅ Fish shell with Starship prompt                             ║
     ║  ✅ Quickshell desktop widgets                                  ║
+    ║  ✅ Thunar with full mounting & thumbnail support               ║
     ║  ✅ Sample wallpapers and keybind reference                     ║
     ║  ✅ Hardware-specific optimizations applied                     ║
     ║  ✅ Automatic configuration backups created                     ║
@@ -779,6 +832,7 @@ main() {
     install_packages
     create_backup
     deploy_configs
+    setup_thunar_mounting
     setup_shell
     setup_services
     set_permissions
