@@ -104,9 +104,10 @@ MouseArea {
         
 
         // Always update visibility based on hover if not in shortcut mode
-        if (!dashboardShortcutActive) {
+        // But don't show dashboard if launcher is active
+        if (!dashboardShortcutActive && !visibilities.launcher) {
             visibilities.dashboard = showDashboard;
-        } else if (showDashboard) {
+        } else if (showDashboard && !visibilities.launcher) {
             // If hovering over dashboard area while in shortcut mode, transition to hover control
             dashboardShortcutActive = false;
         }

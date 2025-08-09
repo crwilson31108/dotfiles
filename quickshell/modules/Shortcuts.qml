@@ -13,7 +13,19 @@ Scope {
         description: "Toggle launcher, dashboard and osd"
         onPressed: {
             const v = Visibilities.getForActive();
-            v.launcher = v.dashboard = v.osd = !(v.launcher || v.dashboard || v.osd);
+            const shouldShow = !(v.launcher || v.dashboard || v.osd);
+            
+            // If showing, only show launcher (not dashboard)
+            if (shouldShow) {
+                v.launcher = true;
+                v.osd = true;
+                // Don't show dashboard when launcher is active
+            } else {
+                // If hiding, hide all
+                v.launcher = false;
+                v.dashboard = false;
+                v.osd = false;
+            }
         }
     }
 
@@ -72,6 +84,11 @@ Scope {
                 if (drawer === "windowswitcher") {
                     WindowSwitcher.onNext();
                 } else {
+                    // Don't allow dashboard to be toggled when launcher is active
+                    if (drawer === "dashboard" && visibilities.launcher) {
+                        return;
+                    }
+                    
                     // For overview, ensure we properly track state
                     if (drawer === "overview") {
                         // If it's currently true, set to false

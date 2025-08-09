@@ -107,7 +107,6 @@ Item {
 
                 function onLauncherChanged(): void {
                     if (root.visibilities.launcher) {
-                        Apps.refreshApps();
                         search.focus = true;
                     } else {
                         search.text = "";
