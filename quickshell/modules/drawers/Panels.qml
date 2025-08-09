@@ -9,6 +9,7 @@ import "./../windowswitcher" as WindowSwitcherModule
 import "./../overview" as Overview
 import "./../bar/popouts" as BarPopouts
 import "./../powermenu"
+import "./../workspacemanager" as WorkspaceManager
 import Quickshell
 import QtQuick
 
@@ -26,6 +27,7 @@ Item {
     readonly property Dashboard.Wrapper dashboard: dashboard
     readonly property WindowSwitcherModule.Wrapper windowSwitcher: windowSwitcher
     readonly property Overview.Wrapper overview: overview
+    readonly property WorkspaceManager.Wrapper workspaceManager: workspaceManager
     readonly property BarPopouts.Wrapper popouts: popouts
 
     anchors.fill: parent
@@ -99,6 +101,14 @@ Item {
         height: visibilities.overview ? parent.height : 0
     }
 
+    WorkspaceManager.Wrapper {
+        id: workspaceManager
+
+        visibilities: root.visibilities
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+    }
 
     BarPopouts.Wrapper {
         id: popouts

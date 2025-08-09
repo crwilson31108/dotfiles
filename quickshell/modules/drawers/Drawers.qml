@@ -30,7 +30,7 @@ Variants {
             name: "drawers"
             WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview || visibilities.workspacemanager ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
             mask: Region {
                 x: Config.border.thickness
@@ -64,13 +64,14 @@ Variants {
             }
 
             HyprlandFocusGrab {
-                active: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview
+                active: visibilities.launcher || visibilities.session || visibilities.windowswitcher || visibilities.overview || visibilities.workspacemanager
                 windows: [win]
                 onCleared: {
                     visibilities.launcher = false;
                     visibilities.session = false;
                     visibilities.windowswitcher = false;
                     visibilities.overview = false;
+                    visibilities.workspacemanager = false;
                 }
             }
 
@@ -133,6 +134,7 @@ Variants {
                 property bool dashboard
                 property bool windowswitcher
                 property bool overview
+                property bool workspacemanager
 
                 Component.onCompleted: Visibilities.screens[scope.modelData] = this
             }

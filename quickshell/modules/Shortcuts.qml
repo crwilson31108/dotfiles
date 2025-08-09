@@ -72,6 +72,15 @@ Scope {
         }
     }
 
+    CustomShortcut {
+        name: "workspacemanager"
+        description: "Toggle workspace manager"
+        onPressed: {
+            const visibilities = Visibilities.getForActive();
+            visibilities.workspacemanager = !visibilities.workspacemanager;
+        }
+    }
+
 
     IpcHandler {
         target: "drawers"

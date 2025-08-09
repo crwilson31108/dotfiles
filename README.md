@@ -148,12 +148,6 @@ papirus-folders -C red --theme Papirus
 papirus-folders -C red --theme Papirus-Dark
 ```
 
-## Step 4: HyprPM (Hyprland Plugin Manager)
-```bash
-hyprpm update
-hyprpm add https://github.com/KZDKM/Hyprspace
-hyprpm enable Hyprspace
-```
 
 ## Package Categories
 
@@ -165,7 +159,7 @@ hyprpm enable Hyprspace
 - **hypridle** (AUR) - Idle management daemon
 - **hyprpicker** (AUR) - Color picker tool
 - **hyprsunset** (AUR) - Blue light filter
-- **Hyprspace** - Workspace overview plugin (via HyprPM)
+- **Custom Workspace Manager** - Built-in workspace overview with drag and drop
 
 ### Terminal & Shell
 - **foot** - Lightweight Wayland terminal emulator
@@ -432,7 +426,7 @@ sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
 - `Super + 1-4` - Switch to workspace 1-4
 - `Super + Ctrl + 1-4` - Move window to workspace and follow
 - `Super + Shift + 1-4` - Move window to workspace silently
-- `Super + Tab` - Hyprspace workspace overview
+- `Super + Tab` - Workspace manager overview
 - `Super + Equal` - Toggle special workspace
 
 ### System Controls

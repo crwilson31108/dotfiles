@@ -1,0 +1,7 @@
+module workspacemanager
+
+Wrapper 1.0 Wrapper.qml
+WorkspaceOverview 1.0 WorkspaceOverview.qml
+WorkspaceItem 1.0 WorkspaceItem.qml
+WindowPreview 1.0 WindowPreview.qml
+OverviewWindow 1.0 OverviewWindow.qml
