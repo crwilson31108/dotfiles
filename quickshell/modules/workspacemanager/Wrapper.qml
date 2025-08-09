@@ -9,17 +9,54 @@ Item {
 
     required property PersistentProperties visibilities
 
-    // Only take up space when visible
-    width: visibilities.workspacemanager ? parent.width : 0
-    height: visibilities.workspacemanager ? parent.height : 0
-    
-    // Completely disable when not visible
-    visible: visibilities.workspacemanager
+    // Only take up space when visible (like Overview)
+    visible: height > 0
+    enabled: height > 0
+    implicitHeight: 0
+    implicitWidth: parent.width
+    clip: true
 
-    // Semi-transparent background overlay
+    states: State {
+        name: "visible"
+        when: root.visibilities.workspacemanager
+
+        PropertyChanges {
+            root.implicitHeight: parent.height
+        }
+    }
+
+    transitions: [
+        Transition {
+            from: ""
+            to: "visible"
+
+            NumberAnimation {
+                target: root
+                property: "implicitHeight"
+                duration: Appearance.anim.durations.expressiveDefaultSpatial
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+            }
+        },
+        Transition {
+            from: "visible"
+            to: ""
+
+            NumberAnimation {
+                target: root
+                property: "implicitHeight"
+                duration: Appearance.anim.durations.normal
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.anim.curves.emphasized
+            }
+        }
+    ]
+
+    // Background with integrated click handling (like Overview)
     Rectangle {
         anchors.fill: parent
         color: Qt.rgba(0, 0, 0, 0.7)
+        radius: Appearance.rounding.normal
         opacity: visibilities.workspacemanager ? 1 : 0
 
         Behavior on opacity {
@@ -31,6 +68,9 @@ Item {
 
         MouseArea {
             anchors.fill: parent
+            enabled: root.visibilities.workspacemanager
+            visible: root.visibilities.workspacemanager
+            propagateComposedEvents: true  // Always allow events to propagate to children
             onClicked: root.visibilities.workspacemanager = false
         }
     }

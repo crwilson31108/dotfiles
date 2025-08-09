@@ -108,6 +108,8 @@ Item {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+        width: parent.width
+        height: visibilities.workspacemanager ? parent.height : 0
     }
 
     BarPopouts.Wrapper {
