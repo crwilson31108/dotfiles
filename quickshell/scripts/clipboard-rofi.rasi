@@ -1,0 +1,108 @@
+/* Rosé Pine Dark theme for Clipboard selector */
+configuration {
+    show-icons: false;
+    kb-cancel: "Escape";
+    kb-accept-entry: "Return,KP_Enter";
+    kb-row-up: "Up";
+    kb-row-down: "Down";
+}
+
+* {
+    /* Base colors */
+    background: rgba ( 25, 23, 36, 100 % );
+    background-alt: rgba ( 31, 29, 46, 100 % );
+    foreground: rgba ( 224, 222, 244, 100 % );
+    foreground-dim: rgba ( 144, 140, 170, 100 % );
+    
+    /* Accent colors */
+    rose: rgba ( 235, 188, 186, 100 % );
+    pine: rgba ( 49, 116, 143, 100 % );
+    iris: rgba ( 196, 167, 231, 100 % );
+    foam: rgba ( 156, 207, 216, 100 % );
+    
+    /* Applied colors */
+    background-color: @background;
+    text-color: @foreground;
+    font: "JetBrainsMono Nerd Font 11";
+}
+
+window {
+    location: center;
+    width: 60%;
+    height: 60%;
+    border-radius: 12px;
+    background-color: @background;
+    padding: 0;
+}
+
+mainbox {
+    children: [inputbar, listview];
+    spacing: 15px;
+    padding: 20px;
+}
+
+inputbar {
+    children: [prompt, entry];
+    padding: 12px;
+    background-color: @background-alt;
+    border-radius: 8px;
+    spacing: 10px;
+}
+
+prompt {
+    font: "JetBrainsMono Nerd Font 13 bold";
+    text-color: @foam;
+}
+
+entry {
+    font: "JetBrainsMono Nerd Font 12";
+    text-color: @foreground;
+    placeholder: "Search clipboard...";
+    placeholder-color: @foreground-dim;
+    background-color: transparent;
+}
+
+listview {
+    lines: 15;
+    scrollbar: true;
+    padding: 10px;
+    background-color: @background-alt;
+    border-radius: 8px;
+    fixed-height: true;
+}
+
+scrollbar {
+    width: 4px;
+    padding: 0;
+    handle-width: 4px;
+    border: 0;
+    handle-color: @iris;
+    background-color: @background;
+}
+
+element {
+    padding: 12px 15px;
+    border-radius: 6px;
+    spacing: 8px;
+}
+
+element.normal {
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element.selected {
+    background-color: @pine;
+    text-color: @background;
+}
+
+element.alternate.normal {
+    background-color: rgba ( 31, 29, 46, 50 % );
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+    font: "JetBrainsMono Nerd Font 10";
+    vertical-align: 0.5;
+}

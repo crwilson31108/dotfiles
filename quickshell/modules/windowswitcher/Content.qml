@@ -94,21 +94,42 @@ Item {
                 id: screenCapture
                 anchors.fill: parent
                 
-                captureSource: WindowSwitcher.selectedWindow?.wayland ?? null
-                live: visible
+                property var targetWindow: WindowSwitcher.selectedWindow?.wayland ?? null
+                property var lastWindow: null
+                property bool transitioning: false
+                
+                captureSource: transitioning ? null : targetWindow
+                live: visible && !transitioning
                 
                 constraintSize.width: root.previewWidth - 16
                 constraintSize.height: root.previewHeight - 80
+                
+                onTargetWindowChanged: {
+                    if (lastWindow !== targetWindow) {
+                        // Force a clean transition by nulling capture source first
+                        transitioning = true
+                        lastWindow = targetWindow
+                        refreshTimer.restart()
+                    }
+                }
+                
+                Timer {
+                    id: refreshTimer
+                    interval: 50  // Longer delay to ensure buffer is fully cleared
+                    onTriggered: {
+                        screenCapture.transitioning = false
+                    }
+                }
                 
                 Rectangle {
                     anchors.fill: parent
                     color: Colours.palette.m3surfaceContainerLow
                     radius: Appearance.rounding.normal
-                    visible: !screenCapture.captureSource
+                    visible: !screenCapture.captureSource || screenCapture.transitioning
                     
                     StyledText {
                         anchors.centerIn: parent
-                        text: "Preview unavailable"
+                        text: screenCapture.targetWindow ? "Loading preview..." : "Preview unavailable"
                         color: Colours.palette.m3onSurfaceVariant
                         font.pointSize: Appearance.font.size.normal
                     }

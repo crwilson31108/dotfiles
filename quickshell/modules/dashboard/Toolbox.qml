@@ -19,30 +19,66 @@ ColumnLayout {
 
     spacing: Appearance.padding.large
 
-    // hyprsunset doesn't provide status query, so we track state manually
-    // Assume it starts disabled (identity/normal temperature)
-
-    // Process for checking caffeine/hypridle status
+    // Check if caffeinate is running
+    function checkCaffeineState() {
+        caffeineCheckProc.running = true
+    }
+    
     Process {
-        id: hypridleCheck
-        command: ["pgrep", "hypridle"]
-        running: true
+        id: caffeineCheckProc
+        command: ["pgrep", "caffeinate"]
         
-        onExited: {
-            caffeineActive = stdout.trim() === ""
-            hypridleCheck.running = false
+        onExited: (exitCode) => {
+            // If exit code is 0, caffeinate is running
+            root.caffeineActive = (exitCode === 0)
+            console.log("Caffeinate check:", exitCode === 0 ? "running" : "not running")
         }
     }
-
-    // Process components for utility functions
-    Process {
-        id: hypridleStartProc
-        command: ["hypridle"]
+    
+    // Timer for delayed state checks
+    Timer {
+        id: stateCheckTimer
+        interval: 500
+        repeat: false
+        onTriggered: checkCaffeineState()
     }
-
+    
+    // Start caffeinate detached
     Process {
-        id: hypridleKillProc
-        command: ["pkill", "hypridle"]
+        id: startCaffeineProc
+        command: ["sh", "-c", "caffeinate -d &"]
+        
+        onExited: {
+            // Check state after starting
+            stateCheckTimer.start()
+        }
+    }
+    
+    // Kill all caffeinate processes
+    Process {
+        id: killCaffeineProc
+        command: ["pkill", "caffeinate"]
+        
+        onExited: {
+            // Check state after killing
+            stateCheckTimer.start()
+        }
+    }
+    
+    Component.onCompleted: {
+        // Check initial state
+        checkCaffeineState()
+    }
+    
+    // Check state when drawer opens
+    Connections {
+        target: root.visibilities
+        
+        function onDashboardChanged() {
+            if (root.visibilities.dashboard) {
+                checkCaffeineState()
+            }
+        }
     }
 
     Process {
@@ -150,13 +186,18 @@ ColumnLayout {
                     active: root.caffeineActive
                     onClicked: {
                         if (root.caffeineActive) {
-                            // Enable hypridle again
-                            hypridleStartProc.running = true
+                            // Optimistically update state
+                            root.caffeineActive = false
+                            // Kill all caffeinate processes
+                            killCaffeineProc.running = true
+                            console.log("Stay Awake deactivated (optimistic)")
                         } else {
-                            // Kill hypridle to prevent screen lock
-                            hypridleKillProc.running = true
+                            // Optimistically update state
+                            root.caffeineActive = true
+                            // Start caffeinate detached
+                            startCaffeineProc.running = true
+                            console.log("Stay Awake activated (optimistic)")
                         }
-                        root.caffeineActive = !root.caffeineActive
                     }
                 }
 

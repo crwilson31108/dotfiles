@@ -137,7 +137,8 @@ yay -S \
   swww \
   catppuccin-gtk-theme-mocha \
   bibata-cursor-theme \
-  sddm
+  sddm \
+  caffeinate
 ```
 
 ## Step 3: Papirus Icon Theme
@@ -232,6 +233,7 @@ papirus-folders -C red --theme Papirus-Dark
 - **hyprpicker** (AUR) - Color picker integration
 - **hyprsunset** (AUR) - Blue light filter control
 - **cliphist** (AUR) - Clipboard history management
+- **caffeinate** (AUR) - Prevents system sleep and display dimming
 - **zenity** - Native file picker dialogs
 - **rofi-wayland** - Application launcher and clipboard interface
 - **inotify-tools** - File system monitoring for app list updates
@@ -253,6 +255,18 @@ papirus-folders -C red --theme Papirus-Dark
 - GTK3/GTK4 toolkits
 - Various system libraries (cairo, pango, etc.)
 - Desktop integration portals
+
+## AMD G14 Sleep/Wake Optimization
+
+### Sleep Mode Configuration
+
+For reliable wake from suspend on the ASUS G14 with AMD Ryzen AI 9 HX 370, run the sleep mode optimizer:
+
+```bash
+~/.config/hypr/scripts/setup-sleep-mode.sh
+```
+
+This switches from `s2idle` to `deep` suspend mode, which is more reliable on AMD systems.
 
 ## Kernel Parameters for AMD Ryzen AI 370
 

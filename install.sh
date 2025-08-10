@@ -225,6 +225,7 @@ install_packages() {
         "fd"
         "ripgrep"
         "cliphist"
+        "caffeinate"
         "curl"
         "wget"
         "git"

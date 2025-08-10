@@ -78,13 +78,29 @@ Item {
             width: root.width - Appearance.padding.normal * 2
             
             text: root.modelData?.name || root.modelData?.command || ""
-            color: Colours.palette.m3onSurface
+            color: {
+                // Use high contrast white text when this item is selected (keyboard highlight)
+                if (root.GridView.isCurrentItem) {
+                    return "#ffffff"
+                } else {
+                    return Colours.palette.m3onSurface
+                }
+            }
             font.pointSize: Appearance.font.size.smaller
+            font.weight: root.GridView.isCurrentItem ? Font.Medium : Font.Normal
             
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
             maximumLineCount: 2
             wrapMode: Text.WordWrap
+            
+            Behavior on color {
+                ColorAnimation {
+                    duration: Appearance.anim.durations.small
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.anim.curves.standard
+                }
+            }
         }
     }
 

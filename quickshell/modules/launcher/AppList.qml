@@ -63,7 +63,76 @@ ListView {
         return appItem;
     }
 
-    ScrollBar.vertical: StyledScrollBar {}
+    ScrollBar.vertical: StyledScrollBar {
+        id: scrollBar
+        stepSize: 0.5  // Much larger step size for faster scrolling
+    }
+    
+    // Momentum scrolling variables
+    property real velocity: 0
+    property real lastWheelTime: 0
+    property real targetContentY: contentY
+    
+    // Smooth scrolling behavior using Behavior animation
+    Behavior on contentY {
+        SmoothedAnimation {
+            velocity: 4000  // Pixels per second - faster and more responsive
+            duration: -1    // Use velocity-based timing
+        }
+    }
+    
+    // Momentum physics with smoother updates
+    Timer {
+        id: momentumTimer
+        interval: 8  // 120fps for extra smoothness
+        repeat: true
+        onTriggered: {
+            if (Math.abs(root.velocity) > 0.05) {  // Lower threshold for longer momentum
+                // Calculate new target position
+                const maxY = Math.max(0, root.contentHeight - root.height)
+                root.targetContentY = Math.max(0, Math.min(root.targetContentY - root.velocity, maxY))
+                
+                // Update contentY (will be smoothed by Behavior)
+                root.contentY = root.targetContentY
+                
+                // Apply friction - more gradual
+                root.velocity *= 0.97
+            } else {
+                // Stop momentum when velocity is too low
+                root.velocity = 0
+                stop()
+            }
+        }
+    }
+    
+    // Enhanced mouse wheel handling with momentum
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        onWheel: event => {
+            const currentTime = Date.now()
+            const deltaTime = Math.max(1, currentTime - root.lastWheelTime)
+            root.lastWheelTime = currentTime
+            
+            // Calculate scroll amount
+            const scrollDelta = event.angleDelta.y * 1.5  // Increased for more speed
+            
+            // Add to velocity for momentum
+            const accelerationFactor = Math.min(1.8, 80 / deltaTime)
+            root.velocity += (scrollDelta * accelerationFactor) * 0.08
+            
+            // Immediate response to wheel - more responsive
+            const immediateScroll = scrollDelta * 0.25
+            const maxY = Math.max(0, root.contentHeight - root.height)
+            root.targetContentY = Math.max(0, Math.min(root.targetContentY - immediateScroll, maxY))
+            root.contentY = root.targetContentY  // Smoothed by Behavior
+            
+            // Start momentum if not already running
+            if (!momentumTimer.running) {
+                momentumTimer.start()
+            }
+        }
+    }
 
     add: Transition {
         Anim {
