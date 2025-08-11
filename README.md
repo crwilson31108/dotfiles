@@ -457,10 +457,9 @@ sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
 - `XF86AudioPlay/Next/Previous` - Media playback
 - `XF86MonBrightnessUp/Down` - Brightness control
 
-### Touchpad Gestures (Fusuma)
-- `Three-finger swipe left` - Next workspace (natural scrolling style)
-- `Three-finger swipe right` - Previous workspace (natural scrolling style)
-- `Three-finger swipe up/down` - Toggle workspace manager (Quickshell)
+### Touchpad Gestures (Hybrid: Native + Fusuma)
+- `Three-finger swipe left/right` - Navigate workspaces (native Hyprland - smooth)
+- `Three-finger swipe up/down` - Toggle workspace manager (Quickshell via Fusuma)
 - `Super + Tab` - Toggle workspace manager (keyboard shortcut)
 
 ## 🔧 Troubleshooting
