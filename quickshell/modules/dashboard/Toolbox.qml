@@ -8,6 +8,7 @@ import Quickshell.Widgets
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 ColumnLayout {
     id: root
@@ -16,12 +17,47 @@ ColumnLayout {
 
     property bool caffeineActive: false
     property bool nightShiftActive: false
+    property int updateCount: 0
+    property string updateDetails: "Repo: 0, AUR: 0, Flatpak: 0"
 
     spacing: Appearance.padding.large
 
     // Check if caffeinate is running
     function checkCaffeineState() {
         caffeineCheckProc.running = true
+    }
+    
+    // Check for system updates
+    function checkSystemUpdates() {
+        loadUpdates()
+    }
+    
+    function loadUpdates() {
+        const req = new XMLHttpRequest()
+        req.onreadystatechange = function() {
+            if (req.readyState === XMLHttpRequest.DONE) {
+                if (req.status === 0 || req.status === 200) {
+                    try {
+                        const data = JSON.parse(req.responseText)
+                        const repo = Number(data.repo) || 0
+                        const aur = Number(data.aur) || 0
+                        const flat = Number(data.flatpak) || 0
+                        const total = Number(data.total) || repo + aur + flat
+                        root.updateCount = total
+                        root.updateDetails = `Repo: ${repo}, AUR: ${aur}, Flatpak: ${flat}`
+                    } catch(e) {
+                        root.updateCount = 0
+                        root.updateDetails = "Repo: 0, AUR: 0, Flatpak: 0"
+                    }
+                } else {
+                    root.updateCount = 0
+                    root.updateDetails = "Repo: 0, AUR: 0, Flatpak: 0"
+                }
+            }
+        }
+        const updatesFile = "file:///run/user/1000/qs-updates.json"
+        req.open("GET", updatesFile, true)
+        req.send()
     }
     
     Process {
@@ -31,9 +67,9 @@ ColumnLayout {
         onExited: (exitCode) => {
             // If exit code is 0, caffeinate is running
             root.caffeineActive = (exitCode === 0)
-            console.log("Caffeinate check:", exitCode === 0 ? "running" : "not running")
         }
     }
+    
     
     // Timer for delayed state checks
     Timer {
@@ -41,6 +77,15 @@ ColumnLayout {
         interval: 500
         repeat: false
         onTriggered: checkCaffeineState()
+    }
+    
+    // Timer to periodically check for updates
+    Timer {
+        id: updateCheckTimer
+        interval: 60000  // 1 minute - more frequent to catch updates quickly
+        repeat: true
+        running: true
+        onTriggered: checkSystemUpdates()
     }
     
     // Start caffeinate detached
@@ -68,6 +113,8 @@ ColumnLayout {
     Component.onCompleted: {
         // Check initial state
         checkCaffeineState()
+        // Check for updates
+        Qt.callLater(checkSystemUpdates)
     }
     
     // Check state when drawer opens
@@ -77,6 +124,7 @@ ColumnLayout {
         function onDashboardChanged() {
             if (root.visibilities.dashboard) {
                 checkCaffeineState()
+                Qt.callLater(checkSystemUpdates)
             }
         }
     }
@@ -114,6 +162,7 @@ ColumnLayout {
         command: ["/home/caseyw/.config/quickshell/scripts/clipboard-rofi.sh"]
     }
 
+
     Timer {
         id: colorPickerDelayTimer
         interval: 500  // Wait 500ms for drawer to close completely
@@ -143,6 +192,17 @@ ColumnLayout {
         onTriggered: {
             // Launch clipboard rofi selector
             clipboardRofiProc.running = true
+        }
+    }
+
+    Timer {
+        id: systemUpdateDelayTimer
+        interval: 500  // Wait 500ms for drawer to close completely
+        repeat: false
+        onTriggered: {
+            // Launch system updates in terminal
+            quickLauncherProc.command = ["foot", "--title=System Updates", "bash", "-c", "/home/caseyw/.config/quickshell/scripts/run-system-updates.sh; read -p 'Press enter to close'"]
+            quickLauncherProc.running = true
         }
     }
 
@@ -190,13 +250,11 @@ ColumnLayout {
                             root.caffeineActive = false
                             // Kill all caffeinate processes
                             killCaffeineProc.running = true
-                            console.log("Stay Awake deactivated (optimistic)")
                         } else {
                             // Optimistically update state
                             root.caffeineActive = true
                             // Start caffeinate detached
                             startCaffeineProc.running = true
-                            console.log("Stay Awake activated (optimistic)")
                         }
                     }
                 }
@@ -253,11 +311,51 @@ ColumnLayout {
                     }
                 }
 
-            // Empty slot for alignment
-            Item {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
+                // System Updates
+                UtilityButton {
+                    iconName: root.updateCount > 0 ? "system_update_alt" : "system_update"
+                    text: qsTr("Updates") + (root.updateCount > 0 ? " (" + root.updateCount + ")" : "")
+                    active: root.updateCount > 0
+                    
+                    onClicked: {
+                        // Close drawer first, then wait for it to close
+                        root.visibilities.dashboard = false
+                        // Use timer to wait for drawer animation to complete
+                        systemUpdateDelayTimer.start()
+                    }
+                    
+                    // Show tooltip on hover with update details
+                    Rectangle {
+                        visible: parent.hovered && root.updateDetails && root.updateDetails !== "No updates available"
+                        anchors.bottom: parent.top
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottomMargin: 8
+                        
+                        width: tooltipText.width + 16
+                        height: tooltipText.height + 12
+                        color: Colours.palette.m3surfaceContainerHigh
+                        radius: Appearance.rounding.small
+                        
+                        StyledText {
+                            id: tooltipText
+                            anchors.centerIn: parent
+                            text: root.updateDetails
+                            color: Colours.palette.m3onSurface
+                            font.pointSize: Appearance.font.size.small
+                        }
+                        
+                        // Tooltip arrow
+                        Rectangle {
+                            anchors.top: parent.bottom
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.topMargin: -4
+                            width: 8
+                            height: 8
+                            color: parent.color
+                            rotation: 45
+                        }
+                    }
+                }
         }
     }
 
@@ -269,17 +367,26 @@ ColumnLayout {
         property string iconName: ""
         property string text: ""
         property bool active: false
+        property bool hovered: mouseArea.containsMouse
         signal clicked()
         
         Layout.fillWidth: true
         Layout.preferredHeight: 80
         
-        color: utilButton.active ? Colours.palette.m3primaryContainer : Colours.palette.m3surfaceContainer
+        color: {
+            if (utilButton.active) {
+                return utilButton.hovered ? Colours.palette.m3primary : Colours.palette.m3primaryContainer
+            } else {
+                return utilButton.hovered ? Colours.palette.m3surfaceContainerHigh : Colours.palette.m3surfaceContainer
+            }
+        }
         radius: Appearance.rounding.normal
         
         MouseArea {
+            id: mouseArea
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
+            hoverEnabled: true
             onClicked: utilButton.clicked()
         }
         
@@ -291,7 +398,15 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignHCenter
                 
                 text: utilButton.iconName
-                color: utilButton.active ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurface
+                color: {
+                    if (utilButton.active && utilButton.hovered) {
+                        return Colours.palette.m3onPrimary
+                    } else if (utilButton.active) {
+                        return Colours.palette.m3onPrimaryContainer
+                    } else {
+                        return Colours.palette.m3onSurface
+                    }
+                }
                 font.pointSize: Appearance.font.size.extraLarge
             }
             
@@ -299,7 +414,15 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignHCenter
                 
                 text: utilButton.text
-                color: utilButton.active ? Colours.palette.m3onPrimaryContainer : Colours.palette.m3onSurfaceVariant
+                color: {
+                    if (utilButton.active && utilButton.hovered) {
+                        return Colours.palette.m3onPrimary
+                    } else if (utilButton.active) {
+                        return Colours.palette.m3onPrimaryContainer
+                    } else {
+                        return Colours.palette.m3onSurfaceVariant
+                    }
+                }
                 font.pointSize: Appearance.font.size.small
             }
         }
