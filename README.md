@@ -117,7 +117,7 @@ sudo pacman -S \
   cups \
   cups-filters \
   cups-pdf \
-  system-config-printer
+  system-config-printer \
 ```
 
 ### Step 2: Install AUR Packages
@@ -125,7 +125,6 @@ sudo pacman -S \
 ```bash
 yay -S \
   hyprland-git \
-  hyprland-plugins \
   hypridle \
   hyprpicker \
   hyprsunset \
@@ -156,7 +155,6 @@ papirus-folders -C red --theme Papirus-Dark
 - **hyprland** - The Wayland compositor
 - **xdg-desktop-portal-hyprland** - Screen sharing and desktop integration
 - **hyprlock** - Screen locker
-- **hyprland-plugins** (AUR) - Additional functionality plugins
 - **hypridle** (AUR) - Idle management daemon
 - **hyprpicker** (AUR) - Color picker tool
 - **hyprsunset** (AUR) - Blue light filter
@@ -196,6 +194,8 @@ papirus-folders -C red --theme Papirus-Dark
 - **inotify-tools** - File system monitoring
 - **udisks2** - Disk management
 - **upower** - Power management
+- **jq** - JSON processor for workspace scripts
+- **ruby** - Runtime for fusuma touchpad gesture daemon
 
 ### File System & Storage
 - **gvfs** - Virtual file system
@@ -456,6 +456,12 @@ sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
 - `XF86AudioMute` - Mute toggle
 - `XF86AudioPlay/Next/Previous` - Media playback
 - `XF86MonBrightnessUp/Down` - Brightness control
+
+### Touchpad Gestures (Fusuma)
+- `Three-finger swipe left` - Next workspace (natural scrolling style)
+- `Three-finger swipe right` - Previous workspace (natural scrolling style)
+- `Three-finger swipe up/down` - Toggle workspace manager (Quickshell)
+- `Super + Tab` - Toggle workspace manager (keyboard shortcut)
 
 ## 🔧 Troubleshooting
 

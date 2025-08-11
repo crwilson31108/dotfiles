@@ -1,0 +1,16 @@
+swipe:
+  3:
+    left:
+      command: "~/.config/hypr/scripts/ws_next_wrap.sh"
+    right:
+      command: "~/.config/hypr/scripts/ws_prev_wrap.sh"
+    up:
+      command: "quickshell ipc -p /home/caseyw/.config/quickshell call drawers toggle workspacemanager"
+    down:
+      command: "quickshell ipc -p /home/caseyw/.config/quickshell call drawers toggle workspacemanager"
+
+threshold:
+  swipe: 0.5
+
+interval:
+  swipe: 0.5

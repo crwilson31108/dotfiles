@@ -230,6 +230,7 @@ install_packages() {
         "wget"
         "git"
         "jq"
+        "ruby"
         "xdg-user-dirs"
     )
     
@@ -313,6 +314,8 @@ install_packages() {
         "bluez-utils"
         "blueman"
         "brightnessctl"
+        "jq"
+        "ruby"
         "polkit-gnome"
         "xdg-desktop-portal"
         "xdg-desktop-portal-kde"
@@ -383,6 +386,8 @@ create_backup() {
         "Thunar"
         "xsettingsd"
         "fontconfig"
+        "jq"
+        "ruby"
     )
     
     # Backup existing configs
@@ -436,6 +441,8 @@ deploy_configs() {
         "Thunar"
         "xsettingsd"
         "fontconfig"
+        "jq"
+        "ruby"
     )
     
     for dir in "${config_dirs[@]}"; do
@@ -544,6 +551,20 @@ setup_services() {
     # Create XDG user directories
     log_info "Creating XDG user directories..."
     xdg-user-dirs-update
+    
+    # Setup fusuma for touchpad gestures
+    log_info "Adding user to input group for touchpad gestures..."
+    sudo usermod -a -G input "$USER" || log_warning "Failed to add user to input group. You may need to add yourself manually: sudo usermod -a -G input $USER"
+    
+    log_info "Setting up fusuma for touchpad gestures..."
+    gem install fusuma --user-install &>/dev/null || log_warning "Failed to install fusuma"
+    chmod +x ~/.config/hypr/scripts/ws_*.sh 2>/dev/null || true
+    
+    # Update autostart with correct fusuma path
+    FUSUMA_PATH="$HOME/.local/share/gem/ruby/3.4.0/bin/fusuma"
+    if [[ -f ~/.config/hypr/config/autostart.conf ]]; then
+        sed -i "s|exec-once = /home/caseyw/.local/share/gem/ruby/3.4.0/bin/fusuma -d|exec-once = $FUSUMA_PATH -d|g" ~/.config/hypr/config/autostart.conf
+    fi
     
     log_success "System services configured"
 }
