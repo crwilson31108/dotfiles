@@ -96,7 +96,7 @@ Item {
             
             IconImage {
                 anchors.centerIn: parent
-                source: Quickshell.iconPath(AppMatching.getWindowIcon(card.window), "image-missing")
+                source: Quickshell.iconPath(WindowIconMapper.getIconForWindow(card.window), "image-missing")
                 implicitSize: card.iconSize
             }
         }

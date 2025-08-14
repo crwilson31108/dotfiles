@@ -86,7 +86,6 @@ Item {
             id: captureFrame
             anchors.fill: parent
             anchors.margins: 8
-            anchors.bottomMargin: 64 // Leave space for title bar
             radius: Appearance.rounding.normal
             color: Colours.palette.m3surfaceContainerLow
             
@@ -102,7 +101,7 @@ Item {
                 live: visible && !transitioning
                 
                 constraintSize.width: root.previewWidth - 16
-                constraintSize.height: root.previewHeight - 80
+                constraintSize.height: root.previewHeight - 16
                 
                 onTargetWindowChanged: {
                     if (lastWindow !== targetWindow) {
@@ -137,82 +136,6 @@ Item {
             }
         }
         
-        // Clean title bar with app info
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: 8
-            anchors.rightMargin: 8
-            anchors.bottomMargin: 8
-            height: 48
-            color: Colours.palette.m3surfaceContainerHigh
-            radius: Appearance.rounding.normal
-            
-            // Subtle top border
-            Rectangle {
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 1
-                color: Colours.alpha(Colours.palette.m3outline, 0.3)
-            }
-            
-            Item {
-                anchors.fill: parent
-                anchors.margins: Appearance.padding.normal
-                
-                // App icon
-                IconImage {
-                    id: appIcon
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    source: Quickshell.iconPath(AppMatching.getWindowIcon(WindowSwitcher.selectedWindow), "image-missing")
-                    implicitSize: 24
-                }
-                
-                // Title and app name container with proper bounds
-                Item {
-                    anchors.left: appIcon.right
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: Appearance.spacing.normal
-                    anchors.topMargin: 4
-                    anchors.bottomMargin: 4
-                    
-                    // App name (primary)
-                    StyledText {
-                        id: appName
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        
-                        text: AppMatching.getWindowAppName(WindowSwitcher.selectedWindow)
-                        color: Colours.palette.m3onSurface
-                        font.pointSize: Appearance.font.size.normal
-                        font.weight: Font.Medium
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                    }
-                    
-                    // Window title (secondary)
-                    StyledText {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: appName.bottom
-                        anchors.topMargin: 2
-                        visible: anchors.topMargin + implicitHeight <= parent.height - appName.height
-                        
-                        text: WindowIconMapper.getWindowTitle(WindowSwitcher.selectedWindow)
-                        color: Colours.palette.m3onSurfaceVariant
-                        font.pointSize: Appearance.font.size.small
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                    }
-                }
-            }
-        }
     }
 
     // Key event handling for Alt release detection

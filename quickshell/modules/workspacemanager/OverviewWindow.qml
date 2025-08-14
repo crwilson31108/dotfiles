@@ -2,6 +2,7 @@ import "./../../services"
 import "./../../config"
 import "./../../widgets"
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick
@@ -116,11 +117,10 @@ Rectangle {
             spacing: 4
 
             // App icon
-            MaterialIcon {
+            IconImage {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: WindowIconMapper.getIcon(windowData.class)
-                font.pixelSize: Math.min(root.width, root.height) * 0.4
-                color: "#e0def4"  // Rose Pine text
+                source: Quickshell.iconPath(WindowIconMapper.getIconForWindow(windowData), "image-missing")
+                implicitSize: Math.min(root.width, root.height) * 0.4
             }
 
             // Window title
