@@ -2,7 +2,7 @@ import "./../../services"
 import "./../../config"
 import "./../osd" as Osd
 import "./../notifications" as Notifications
-import "./../session" as Session
+// import "./../session" as Session // Module not available
 import "./../launcher" as Launcher
 import "./../dashboard" as Dashboard
 import "./../windowswitcher" as WindowSwitcherModule
@@ -22,7 +22,7 @@ Item {
 
     readonly property Osd.Wrapper osd: osd
     readonly property Notifications.Wrapper notifications: notifications
-    readonly property Session.Wrapper session: session
+    // readonly property Session.Wrapper session: session // Module not available
     readonly property Launcher.Wrapper launcher: launcher
     readonly property Dashboard.Wrapper dashboard: dashboard
     readonly property WindowSwitcherModule.Wrapper windowSwitcher: windowSwitcher
@@ -39,7 +39,8 @@ Item {
     Osd.Wrapper {
         id: osd
 
-        clip: root.visibilities.session
+        // clip: root.visibilities.session // Session module not available
+        clip: false
         screen: root.screen
         visibility: root.visibilities.osd
 
@@ -54,14 +55,14 @@ Item {
         anchors.right: parent.right
     }
 
-    Session.Wrapper {
-        id: session
-
-        visibilities: root.visibilities
-
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
-    }
+    // Session.Wrapper {
+    //     id: session
+    //
+    //     visibilities: root.visibilities
+    //
+    //     anchors.verticalCenter: parent.verticalCenter
+    //     anchors.right: parent.right
+    // }
 
     Launcher.Wrapper {
         id: launcher

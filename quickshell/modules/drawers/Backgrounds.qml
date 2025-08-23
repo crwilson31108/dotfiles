@@ -2,7 +2,7 @@ import "./../../services"
 import "./../../config"
 import "./../osd" as Osd
 import "./../notifications" as Notifications
-import "./../session" as Session
+// import "./../session" as Session // Module not available
 import "./../launcher" as Launcher
 import "./../dashboard" as Dashboard
 import "./../windowswitcher" as WindowSwitcherModule
@@ -37,12 +37,12 @@ Shape {
         startY: 0
     }
 
-    Session.Background {
-        wrapper: panels.session
-
-        startX: root.width
-        startY: (root.height - wrapper.height) / 2 - rounding
-    }
+    // Session.Background {
+    //     wrapper: panels.session
+    //
+    //     startX: root.width
+    //     startY: (root.height - wrapper.height) / 2 - rounding
+    // }
 
     Launcher.Background {
         wrapper: panels.launcher
