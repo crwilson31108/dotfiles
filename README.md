@@ -238,6 +238,11 @@ papirus-folders -C red --theme Papirus-Dark
 - **rofi-wayland** - Application launcher and clipboard interface
 - **inotify-tools** - File system monitoring for app list updates
 
+#### Required Fonts for Quickshell
+- **Material Symbols Rounded** - Icon font for Quickshell widgets (automatically installed by install.sh)
+- **IBM Plex Sans** - UI font used in Quickshell configuration
+- **JetBrains Mono NF** - Monospace font for terminal and code display
+
 ### Development Tools
 - **neovim** - Text editor
 - **git** - Version control
@@ -485,6 +490,17 @@ This script identifies common package conflicts (VS Code, Discord, Firefox varia
 **Applications don't launch:**
 - Check if XDG portals are working: `systemctl --user status xdg-desktop-portal-hyprland`
 - Verify environment variables in `~/.config/hypr/hyprland.conf`
+
+**Quickshell icons missing (calendar_month, power_settings_new, etc):**
+- The Material Symbols Rounded font is required for icons
+- The install script automatically downloads and installs this font
+- To manually install: 
+  ```bash
+  curl -o ~/.local/share/fonts/MaterialSymbolsRounded.ttf \
+    "https://github.com/google/material-design-icons/raw/master/variablefont/MaterialSymbolsRounded%5BFILL%2CGRAD%2Copsz%2Cwght%5D.ttf"
+  fc-cache -fv ~/.local/share/fonts
+  killall quickshell && quickshell &
+  ```
 
 **Poor performance:**
 - NVIDIA users: Install `nvidia-dkms` and reboot

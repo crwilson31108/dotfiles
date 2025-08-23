@@ -303,6 +303,8 @@ install_packages() {
         "gtk4"
         "breeze"
         "glib2"
+        "ttf-ibm-plex"  # Required by Quickshell config
+        "ttf-jetbrains-mono"  # Required by Quickshell config
     )
     
     # System utilities (enhanced portal and desktop integration)
@@ -593,9 +595,45 @@ set_permissions() {
     log_success "Permissions configured"
 }
 
+# Install Material Symbols Rounded font for Quickshell icons
+install_material_symbols_font() {
+    log_section "MATERIAL SYMBOLS FONT INSTALLATION"
+    
+    # Check if Material Symbols Rounded is already installed
+    if fc-list | grep -qi "Material Symbols Rounded"; then
+        log_success "Material Symbols Rounded font already installed"
+        return
+    fi
+    
+    log_info "Installing Material Symbols Rounded font for Quickshell icons..."
+    
+    # Create fonts directory
+    mkdir -p "$HOME/.local/share/fonts"
+    
+    # Download Material Symbols Rounded font
+    local font_url="https://github.com/google/material-design-icons/raw/master/variablefont/MaterialSymbolsRounded%5BFILL%2CGRAD%2Copsz%2Cwght%5D.ttf"
+    local font_file="$HOME/.local/share/fonts/MaterialSymbolsRounded.ttf"
+    
+    if curl -fsSL "$font_url" -o "$font_file" 2>/dev/null; then
+        log_success "Material Symbols Rounded font downloaded"
+        
+        # Update font cache
+        fc-cache -fv "$HOME/.local/share/fonts" >/dev/null 2>&1
+        log_success "Font cache updated"
+    else
+        log_warning "Failed to download Material Symbols Rounded font. Quickshell icons may not display correctly."
+        log_info "You can manually install it later by running:"
+        log_info "curl -o ~/.local/share/fonts/MaterialSymbolsRounded.ttf '$font_url'"
+        log_info "fc-cache -fv ~/.local/share/fonts"
+    fi
+}
+
 # Final setup and validation
 final_setup() {
     log_section "FINAL SETUP"
+    
+    # Install Material Symbols font for Quickshell
+    install_material_symbols_font
     
     # Refresh font cache
     log_info "Refreshing font cache..."
