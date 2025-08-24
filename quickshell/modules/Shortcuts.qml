@@ -31,10 +31,9 @@ Scope {
 
     CustomShortcut {
         name: "session"
-        description: "Toggle session menu"
+        description: "Toggle power menu"
         onPressed: {
-            const visibilities = Visibilities.getForActive();
-            visibilities.session = !visibilities.session;
+            PowerMenu.toggle();
         }
     }
 
@@ -92,6 +91,9 @@ Scope {
                 // Special case for windowswitcher - don't toggle, just trigger
                 if (drawer === "windowswitcher") {
                     WindowSwitcher.onNext();
+                } else if (drawer === "session") {
+                    // Handle power menu separately
+                    PowerMenu.toggle();
                 } else {
                     // Don't allow dashboard to be toggled when launcher is active
                     if (drawer === "dashboard" && visibilities.launcher) {
@@ -114,8 +116,12 @@ Scope {
 
         function dismiss(drawer: string): void {
             if (list().split("\n").includes(drawer)) {
-                const visibilities = Visibilities.getForActive();
-                visibilities[drawer] = false;
+                if (drawer === "session") {
+                    PowerMenu.hide();
+                } else {
+                    const visibilities = Visibilities.getForActive();
+                    visibilities[drawer] = false;
+                }
             } else {
                 console.warn(`[IPC] Drawer "${drawer}" does not exist`);
             }

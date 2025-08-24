@@ -8,6 +8,7 @@ A complete Hyprland setup with Quickshell widgets, foot terminal, fish shell wit
 - **Quickshell** modern desktop widgets and panels
 - **Fish shell** with **Starship** prompt (Rose Pine theme)
 - **Rose Pine** color scheme throughout the system
+- **SilentSDDM theme** with custom Rose Pine colors - modern, customizable login screen
 - **Automated silent installation** - no user prompts required
 - **Comprehensive backup system** for existing configurations
 - **One-command setup** with sane defaults
@@ -73,6 +74,9 @@ sudo pacman -S \
   findutils \
   sed \
   gawk \
+  nushell \
+  thunderbird \
+  steam \
   waybar \
   rofi-wayland \
   mako \
@@ -137,6 +141,7 @@ yay -S \
   catppuccin-gtk-theme-mocha \
   bibata-cursor-theme \
   sddm \
+  brave-bin \
   caffeinate
 ```
 
@@ -163,6 +168,7 @@ papirus-folders -C red --theme Papirus-Dark
 ### Terminal & Shell
 - **foot** - Lightweight Wayland terminal emulator
 - **fish** - Friendly interactive shell
+- **nushell** - Modern shell with structured data
 
 ### Applications
 - **thunar** - File manager
@@ -172,6 +178,9 @@ papirus-folders -C red --theme Papirus-Dark
 - **blueman** - Bluetooth manager
 - **gnome-calculator** - Calculator app
 - **network-manager-applet** - Network management tray icon
+- **brave-bin** - Privacy-focused Chromium-based browser
+- **thunderbird** - Email client
+- **steam** - Gaming platform
 
 ### Window Management Tools
 - **rofi-wayland** - Application launcher
@@ -211,6 +220,8 @@ papirus-folders -C red --theme Papirus-Dark
 
 ### Login Manager
 - **sddm** - Simple Desktop Display Manager
+- **SilentSDDM theme** - Modern, highly customizable SDDM theme with Rose Pine colors
+- **qt6-svg qt6-virtualkeyboard qt6-multimedia** - Required dependencies for SilentSDDM
 
 ### Theming & Appearance
 - **qt5ct** & **qt6ct** - Qt theming tools
@@ -244,7 +255,7 @@ papirus-folders -C red --theme Papirus-Dark
 - **JetBrains Mono NF** - Monospace font for terminal and code display
 
 ### Development Tools
-- **neovim** - Text editor
+- **neovim** - Text editor with LazyVim configuration
 - **git** - Version control
 - Various shell utilities (bash, grep, sed, awk, etc.)
 
@@ -297,6 +308,18 @@ initrd /initramfs-linux-cachyos.img
 - `acpi_osi="Linux"` - Better ACPI compatibility for modern hardware
 
 These parameters are specifically optimized for the AMD Ryzen AI 370 (Zen 5) architecture and will improve sleep/standby functionality.
+
+## Flatpak Applications
+
+The installer automatically configures Flatpak and installs:
+- **Obsidian** - Knowledge base and note-taking application
+- **Moonlight** - Game streaming client for NVIDIA GameStream
+
+Additional Flatpak applications can be installed with:
+```bash
+flatpak search <app-name>
+flatpak install flathub <app-id>
+```
 
 ## Post-Installation
 
@@ -395,16 +418,39 @@ The configuration ensures consistent, crisp font rendering across all applicatio
 
 ## Login Manager Setup
 
-### SDDM Configuration (Recommended)
+### SilentSDDM Configuration (Recommended)
 
-1. Install and enable SDDM:
+The installer automatically:
+- Installs SDDM and SilentSDDM theme with dependencies
+- Creates custom Rose Pine color configuration
+- Generates smooth gradient background
+- Configures virtual keyboard support
+- Enables SDDM service for next boot
+
+Manual configuration (if needed):
+1. Install SDDM and dependencies:
 ```bash
-sudo pacman -S sddm
-sudo systemctl enable sddm
+sudo pacman -S sddm qt6-svg qt6-virtualkeyboard qt6-multimedia
 ```
 
-2. Configure SDDM autologin (optional):
-Create or edit `/etc/sddm.conf`:
+2. Clone and install SilentSDDM:
+```bash
+git clone https://github.com/uiriansan/SilentSDDM.git
+cd SilentSDDM
+sudo cp -rf . /usr/share/sddm/themes/silent/
+```
+
+3. Set the theme in `/etc/sddm.conf.d/silent-theme.conf`:
+```ini
+[General]
+InputMethod=qtvirtualkeyboard
+GreeterEnvironment=QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT_IM_MODULE=qtvirtualkeyboard
+
+[Theme]
+Current=silent
+```
+
+3. Configure SDDM autologin (optional) in `/etc/sddm.conf.d/autologin.conf`:
 ```ini
 [Autologin]
 User=yourusername
@@ -412,11 +458,6 @@ Session=hyprland
 ```
 
 To disable autologin later, comment out these lines with `#`.
-
-3. Copy SDDM configuration to dotfiles for backup:
-```bash
-sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
-```
 
 
 ## Key Bindings
@@ -466,6 +507,32 @@ sudo cp /etc/sddm.conf ~/Documents/Github/dotfiles/sddm.conf
 - `Three-finger swipe left/right` - Navigate workspaces (native Hyprland - smooth)
 - `Three-finger swipe up/down` - Toggle workspace manager (Quickshell via Fusuma)
 - `Super + Tab` - Toggle workspace manager (keyboard shortcut)
+
+## 🚀 LazyVim Configuration
+
+This dotfiles setup includes a complete LazyVim configuration with:
+- Pre-configured LSP servers for multiple languages
+- Auto-completion and snippets
+- File explorer and fuzzy finder
+- Git integration
+- Modern UI with telescope and which-key
+
+The LazyVim configuration will be automatically deployed during installation. On first launch:
+1. Neovim will automatically install all plugins
+2. LSP servers will be installed as needed
+3. Treesitter parsers will be downloaded
+
+To manually set up LazyVim on an existing system:
+```bash
+# Backup existing config
+mv ~/.config/nvim ~/.config/nvim.bak
+
+# Copy the LazyVim config from dotfiles
+cp -r ~/Documents/GitHub/dotfiles/nvim ~/.config/nvim
+
+# Launch Neovim (plugins will auto-install)
+nvim
+```
 
 ## 🔧 Troubleshooting
 

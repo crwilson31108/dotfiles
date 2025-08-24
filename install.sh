@@ -220,6 +220,7 @@ install_packages() {
         "zsh"
         "zsh-autosuggestions"
         "zsh-syntax-highlighting"
+        "nushell"
         "eza"
         "bat"
         "fd"
@@ -259,9 +260,11 @@ install_packages() {
         "evince"                 # PDF viewer with thumbnailer
         "ristretto"              # Lightweight image viewer
         "firefox"
+        "thunderbird"
         "code"
         "discord"
         "spotify-launcher"
+        "steam"
     )
     
     # Media and graphics (enhanced with end-4's audio setup)
@@ -324,6 +327,7 @@ install_packages() {
         "xdg-desktop-portal-gtk"
         "xdg-user-dirs"
         "xdg-utils"
+        "flatpak"
         "neofetch"
         "htop"
         "btop"
@@ -333,6 +337,7 @@ install_packages() {
         "git"
         "vim"
         "nano"
+        "neovim"
     )
     
     # AUR packages (essential for functionality)
@@ -347,6 +352,7 @@ install_packages() {
         "udiskie"
         "gnome-epub-thumbnailer" # EPUB thumbnails
         "foliate"                # Modern ebook reader
+        "brave-bin"              # Brave browser
     )
     
     # Install packages with better error handling
@@ -550,6 +556,25 @@ setup_services() {
     log_info "Enabling udisks2 service for mounting..."
     sudo systemctl enable udisks2 --now 2>/dev/null || true
     
+    # Setup Flatpak
+    log_info "Setting up Flatpak..."
+    # Add Flathub repository
+    sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    # Enable Flatpak theming integration
+    sudo flatpak override --filesystem=$HOME/.themes
+    sudo flatpak override --filesystem=$HOME/.icons
+    sudo flatpak override --env=GTK_THEME=catppuccin-mocha-red
+    sudo flatpak override --env=ICON_THEME=Papirus
+    log_success "Flatpak configured with Flathub repository"
+    
+    # Install essential Flatpak applications
+    log_info "Installing Flatpak applications..."
+    # Install Obsidian
+    flatpak install -y flathub md.obsidian.Obsidian || log_warning "Failed to install Obsidian"
+    # Install Moonlight
+    flatpak install -y flathub com.moonlight_stream.Moonlight || log_warning "Failed to install Moonlight"
+    log_success "Flatpak applications installed"
+    
     # Create XDG user directories
     log_info "Creating XDG user directories..."
     xdg-user-dirs-update
@@ -654,15 +679,140 @@ final_setup() {
 setup_display_manager() {
     log_section "DISPLAY MANAGER SETUP"
     
-    # Check if SDDM is installed, if not install it
+    # Install SDDM and required packages
     if ! command -v sddm >/dev/null 2>&1; then
-        log_info "Installing SDDM display manager..."
-        sudo pacman -S --needed --noconfirm sddm
+        log_info "Installing SDDM display manager and dependencies..."
+        sudo pacman -S --needed --noconfirm sddm qt6-svg qt6-virtualkeyboard qt6-multimedia
     fi
     
     # Enable SDDM service
     log_info "Enabling SDDM display manager..."
     sudo systemctl enable sddm >/dev/null 2>&1 || true
+    
+    # Install SilentSDDM theme
+    log_info "Installing SilentSDDM theme..."
+    
+    # Clone SilentSDDM if not present
+    if [ ! -d "/tmp/SilentSDDM" ]; then
+        log_info "Downloading SilentSDDM theme..."
+        git clone -b main --depth=1 https://github.com/uiriansan/SilentSDDM /tmp/SilentSDDM
+    fi
+    
+    # Install theme
+    sudo mkdir -p /usr/share/sddm/themes/silent
+    sudo cp -rf /tmp/SilentSDDM/* /usr/share/sddm/themes/silent/
+    
+    # Install fonts
+    sudo cp -r /usr/share/sddm/themes/silent/fonts/* /usr/share/fonts/ || true
+    
+    # Create rose pine config
+    log_info "Creating custom Rose Pine configuration..."
+    sudo tee /usr/share/sddm/themes/silent/configs/rose-pine.conf >/dev/null << 'EOF'
+; Rose Pine Dark Theme for SilentSDDM
+[General]
+scale = 1.0
+enable-animations = true
+background-fill-mode = fill
+
+[LoginScreen]
+background = rose-pine-gradient.jpg
+use-background-color = false
+background-color = #191724
+blur = 0
+brightness = 0.0
+saturation = 0.0
+
+[LoginScreen.LoginArea.Avatar]
+shape = circle
+border-radius = 35
+active-size = 120
+inactive-size = 80
+active-border-size = 2
+active-border-color = #c4a7e7
+
+[LoginScreen.LoginArea.Username]
+font-family = RedHatDisplay
+font-size = 16
+font-weight = 700
+color = #e0def4
+
+[LoginScreen.LoginArea.PasswordInput]
+width = 200
+height = 30
+content-color = #e0def4
+background-color = #26233a
+background-opacity = 0.8
+border-size = 1
+border-color = #403d52
+border-radius-left = 10
+border-radius-right = 10
+
+[LoginScreen.LoginArea.LoginButton]
+background-color = #c4a7e7
+background-opacity = 0.9
+active-background-color = #eb6f92
+active-background-opacity = 0.9
+content-color = #191724
+active-content-color = #191724
+
+[LoginScreen.VirtualKeyboard]
+background-color = #26233a
+background-opacity = 0.95
+key-content-color = #e0def4
+key-color = #403d52
+key-active-background-color = #c4a7e7
+primary-color = #c4a7e7
+EOF
+    
+    # Create gradient background
+    log_info "Creating Rose Pine gradient background..."
+    if command -v magick >/dev/null 2>&1; then
+        sudo magick -size 3840x2160 \
+            radial-gradient:'#191724-#1f1d2e-#26233a-#2d2438-#eb6f92-#c084aa-#c4a7e7-#403d52-#31748f' \
+            /tmp/base_gradient.png 2>/dev/null || true
+        
+        sudo magick /tmp/base_gradient.png \
+            \( +clone -channel RGB +noise Uniform -blur 0x0.3 \) \
+            -compose Overlay -composite \
+            -modulate 100,110,100 \
+            /usr/share/sddm/themes/silent/backgrounds/rose-pine-gradient.jpg 2>/dev/null || true
+        
+        sudo rm /tmp/base_gradient.png 2>/dev/null || true
+    else
+        log_warning "ImageMagick not available, using solid color background"
+        # Create solid color fallback
+        sudo tee /usr/share/sddm/themes/silent/backgrounds/rose-pine-gradient.jpg >/dev/null << 'EOF'
+# Fallback: solid rose pine background
+EOF
+    fi
+    
+    # Update metadata to use rose pine config
+    sudo sed -i 's/ConfigFile=configs\/default.conf/ConfigFile=configs\/rose-pine.conf/' \
+        /usr/share/sddm/themes/silent/metadata.desktop
+    
+    # Configure SDDM with SilentSDDM
+    log_info "Configuring SDDM with SilentSDDM theme..."
+    sudo mkdir -p /etc/sddm.conf.d
+    
+    sudo tee /etc/sddm.conf.d/silent-theme.conf >/dev/null << 'EOF'
+[General]
+HaltCommand=/usr/bin/systemctl poweroff
+RebootCommand=/usr/bin/systemctl reboot
+InputMethod=qtvirtualkeyboard
+GreeterEnvironment=QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT_IM_MODULE=qtvirtualkeyboard
+
+[Theme]
+Current=silent
+
+[Users]
+MaximumUid=60513
+MinimumUid=1000
+
+[Autologin]
+Relogin=false
+Session=
+User=
+EOF
     
     # Create Hyprland desktop entry if it doesn't exist
     if [ ! -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
@@ -676,7 +826,10 @@ Type=Application
 EOF
     fi
     
-    log_success "Display manager configured"
+    # Clean up
+    rm -rf /tmp/SilentSDDM 2>/dev/null || true
+    
+    log_success "SilentSDDM theme with Rose Pine colors configured"
 }
 
 # Setup wallpapers directory with samples
@@ -848,10 +1001,11 @@ print_completion() {
     ║  Your Hyprland dotfiles have been installed and optimized:      ║
     ║                                                                  ║
     ║  ✅ Hyprland window manager with complete config                ║
-    ║  ✅ Display manager auto-configured (SDDM)                      ║
+    ║  ✅ Display manager auto-configured (SDDM with Astronaut)       ║
     ║  ✅ Fish shell with Starship prompt                             ║
     ║  ✅ Quickshell desktop widgets                                  ║
     ║  ✅ Thunar with full mounting & thumbnail support               ║
+    ║  ✅ Brave browser and Flatpak configured                        ║
     ║  ✅ Sample wallpapers and keybind reference                     ║
     ║  ✅ Hardware-specific optimizations applied                     ║
     ║  ✅ Automatic configuration backups created                     ║

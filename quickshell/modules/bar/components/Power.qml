@@ -20,8 +20,7 @@ MaterialIcon {
         radius: Appearance.rounding.full
 
         function onClicked(): void {
-            const v = Visibilities.screens[QsWindow.window.screen];
-            v.session = !v.session;
+            PowerMenu.toggle();
         }
     }
 }
