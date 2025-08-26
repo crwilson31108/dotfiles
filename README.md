@@ -8,7 +8,7 @@ A complete Hyprland setup with Quickshell widgets, foot terminal, fish shell wit
 - **Quickshell** modern desktop widgets and panels
 - **Fish shell** with **Starship** prompt (Rose Pine theme)
 - **Rose Pine** color scheme throughout the system
-- **SilentSDDM theme** with custom Rose Pine colors - modern, customizable login screen
+- **SilentSDDM theme** with custom Rose Pine colors (2x scale for HiDPI) - modern, customizable login screen
 - **Automated silent installation** - no user prompts required
 - **Comprehensive backup system** for existing configurations
 - **One-command setup** with sane defaults
@@ -220,8 +220,9 @@ papirus-folders -C red --theme Papirus-Dark
 
 ### Login Manager
 - **sddm** - Simple Desktop Display Manager
-- **SilentSDDM theme** - Modern, highly customizable SDDM theme with Rose Pine colors
+- **SilentSDDM theme** - Modern, highly customizable SDDM theme with Rose Pine colors (2x HiDPI scale)
 - **qt6-svg qt6-virtualkeyboard qt6-multimedia** - Required dependencies for SilentSDDM
+- **imagemagick** - For generating smooth gradient backgrounds
 
 ### Theming & Appearance
 - **qt5ct** & **qt6ct** - Qt theming tools
@@ -422,10 +423,17 @@ The configuration ensures consistent, crisp font rendering across all applicatio
 
 The installer automatically:
 - Installs SDDM and SilentSDDM theme with dependencies
-- Creates custom Rose Pine color configuration
-- Generates smooth gradient background
-- Configures virtual keyboard support
+- Creates custom Rose Pine color configuration with 2x scale for HiDPI displays
+- Generates smooth gradient background using ImageMagick
+- Configures virtual keyboard support for touchscreen devices
 - Enables SDDM service for next boot
+
+### Quick SDDM Theme Installation
+
+If you already have Hyprland configured and just want the SDDM Rose Pine theme:
+```bash
+./install-sddm-theme.sh
+```
 
 Manual configuration (if needed):
 1. Install SDDM and dependencies:
@@ -450,7 +458,12 @@ GreeterEnvironment=QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT
 Current=silent
 ```
 
-3. Configure SDDM autologin (optional) in `/etc/sddm.conf.d/autologin.conf`:
+3. Apply the Rose Pine theme (2x scale) by copying the configuration:
+```bash
+sudo cp ~/Documents/GitHub/dotfiles/sddm-theme/rose-pine-theme.conf /usr/share/sddm/themes/silent/theme.conf
+```
+
+4. Configure SDDM autologin (optional) in `/etc/sddm.conf.d/autologin.conf`:
 ```ini
 [Autologin]
 User=yourusername

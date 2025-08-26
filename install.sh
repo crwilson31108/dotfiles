@@ -705,9 +705,14 @@ setup_display_manager() {
     # Install fonts
     sudo cp -r /usr/share/sddm/themes/silent/fonts/* /usr/share/fonts/ || true
     
-    # Create rose pine config
-    log_info "Creating custom Rose Pine configuration..."
-    sudo tee /usr/share/sddm/themes/silent/configs/rose-pine.conf >/dev/null << 'EOF'
+    # Copy custom Rose Pine configuration from dotfiles
+    if [ -f "$DOTFILES_DIR/sddm-theme/rose-pine-theme.conf" ]; then
+        log_info "Installing custom Rose Pine configuration..."
+        sudo cp "$DOTFILES_DIR/sddm-theme/rose-pine-theme.conf" /usr/share/sddm/themes/silent/theme.conf
+    else
+        # Fallback to creating rose pine config inline
+        log_info "Creating custom Rose Pine configuration..."
+        sudo tee /usr/share/sddm/themes/silent/theme.conf >/dev/null << 'EOF'
 ; Rose Pine Dark Theme for SilentSDDM
 [General]
 scale = 1.0
@@ -756,6 +761,7 @@ content-color = #191724
 active-content-color = #191724
 
 [LoginScreen.VirtualKeyboard]
+scale = 1.0
 background-color = #26233a
 background-opacity = 0.95
 key-content-color = #e0def4
@@ -763,6 +769,7 @@ key-color = #403d52
 key-active-background-color = #c4a7e7
 primary-color = #c4a7e7
 EOF
+    fi
     
     # Create gradient background
     log_info "Creating Rose Pine gradient background..."
@@ -781,38 +788,15 @@ EOF
     else
         log_warning "ImageMagick not available, using solid color background"
         # Create solid color fallback
-        sudo tee /usr/share/sddm/themes/silent/backgrounds/rose-pine-gradient.jpg >/dev/null << 'EOF'
-# Fallback: solid rose pine background
-EOF
+        sudo convert -size 3840x2160 xc:'#191724' /usr/share/sddm/themes/silent/backgrounds/rose-pine-gradient.jpg 2>/dev/null || true
     fi
     
-    # Update metadata to use rose pine config
-    sudo sed -i 's/ConfigFile=configs\/default.conf/ConfigFile=configs\/rose-pine.conf/' \
-        /usr/share/sddm/themes/silent/metadata.desktop
-    
-    # Configure SDDM with SilentSDDM
-    log_info "Configuring SDDM with SilentSDDM theme..."
+    # Deploy SDDM configuration
+    log_info "Deploying SDDM configuration..."
     sudo mkdir -p /etc/sddm.conf.d
-    
-    sudo tee /etc/sddm.conf.d/silent-theme.conf >/dev/null << 'EOF'
-[General]
-HaltCommand=/usr/bin/systemctl poweroff
-RebootCommand=/usr/bin/systemctl reboot
-InputMethod=qtvirtualkeyboard
-GreeterEnvironment=QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT_IM_MODULE=qtvirtualkeyboard
-
-[Theme]
-Current=silent
-
-[Users]
-MaximumUid=60513
-MinimumUid=1000
-
-[Autologin]
-Relogin=false
-Session=
-User=
-EOF
+    if [ -f "$DOTFILES_DIR/etc/sddm.conf.d/10-theme.conf" ]; then
+        sudo cp "$DOTFILES_DIR/etc/sddm.conf.d/10-theme.conf" /etc/sddm.conf.d/
+    fi
     
     # Create Hyprland desktop entry if it doesn't exist
     if [ ! -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
@@ -1001,7 +985,7 @@ print_completion() {
     ║  Your Hyprland dotfiles have been installed and optimized:      ║
     ║                                                                  ║
     ║  ✅ Hyprland window manager with complete config                ║
-    ║  ✅ Display manager auto-configured (SDDM with Astronaut)       ║
+    ║  ✅ Display manager auto-configured (SDDM with Rose Pine)       ║
     ║  ✅ Fish shell with Starship prompt                             ║
     ║  ✅ Quickshell desktop widgets                                  ║
     ║  ✅ Thunar with full mounting & thumbnail support               ║
