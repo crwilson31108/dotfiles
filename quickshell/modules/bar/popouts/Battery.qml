@@ -4,6 +4,7 @@ import "./../../../widgets"
 import "./../../../services"
 import "./../../../config"
 import Quickshell.Services.UPower
+import Quickshell.Io
 import QtQuick
 
 Column {
@@ -12,8 +13,43 @@ Column {
     spacing: Appearance.spacing.normal
     width: Config.bar.sizes.batteryWidth
 
+    property var batteryData: ({})
+
+    Process {
+        id: batteryHealthProcess
+        command: ["/home/caseyw/.config/quickshell/scripts/battery-health.sh"]
+        
+        onExited: {
+            if (exitCode === 0) {
+                const lines = stdout.trim().split('\n')
+                const data = {}
+                for (const line of lines) {
+                    const [key, value] = line.split(':')
+                    if (key && value) {
+                        data[key] = value.trim()
+                    }
+                }
+                root.batteryData = data
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        batteryHealthProcess.start()
+        // Refresh every 30 seconds
+        batteryTimer.start()
+    }
+
+    Timer {
+        id: batteryTimer
+        interval: 30000 // 30 seconds
+        repeat: true
+        onTriggered: batteryHealthProcess.start()
+    }
+
     StyledText {
-        text: UPower.displayDevice.isLaptopBattery ? qsTr("Remaining: %1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : qsTr("No battery detected")
+        text: UPower.displayDevice.isLaptopBattery ? qsTr("Battery: %1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : qsTr("No battery detected")
+        font.weight: 600
     }
 
     StyledText {
@@ -33,202 +69,90 @@ Column {
             return comps.join(", ") || fallback;
         }
 
-        text: UPower.displayDevice.isLaptopBattery ? qsTr("Time %1: %2").arg(UPower.onBattery ? "remaining" : "until charged").arg(UPower.onBattery ? formatSeconds(UPower.displayDevice.timeToEmpty, "Calculating...") : formatSeconds(UPower.displayDevice.timeToFull, "Fully charged!")) : qsTr("Power profile: %1").arg(PowerProfile.toString(PowerProfiles.profile))
+        text: UPower.displayDevice.isLaptopBattery ? qsTr("Time %1: %2").arg(UPower.onBattery ? "remaining" : "until charged").arg(UPower.onBattery ? formatSeconds(UPower.displayDevice.timeToEmpty, "Calculating...") : formatSeconds(UPower.displayDevice.timeToFull, "Fully charged!")) : qsTr("Power managed by TLP")
     }
 
-    Loader {
+    StyledRect {
+        visible: UPower.displayDevice.isLaptopBattery
         anchors.horizontalCenter: parent.horizontalCenter
+        implicitWidth: batteryInfo.implicitWidth + Appearance.padding.normal * 2
+        implicitHeight: batteryInfo.implicitHeight + Appearance.padding.normal * 2
+        
+        color: Colours.palette.m3surfaceContainer
+        radius: Appearance.rounding.normal
 
-        active: PowerProfiles.degradationReason !== PerformanceDegradationReason.None
-        asynchronous: true
+        Column {
+            id: batteryInfo
+            anchors.centerIn: parent
+            spacing: Appearance.spacing.small
 
-        height: active ? (item?.implicitHeight ?? 0) : 0
+            StyledText {
+                text: qsTr("Battery Details")
+                font.weight: 600
+                color: Colours.palette.m3primary
+            }
 
-        sourceComponent: StyledRect {
-            implicitWidth: child.implicitWidth + Appearance.padding.normal * 2
-            implicitHeight: child.implicitHeight + Appearance.padding.smaller * 2
+            StyledText {
+                text: qsTr("Health: %1%").arg(root.batteryData.HEALTH || "...")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
+            }
 
-            color: Colours.palette.m3error
-            radius: Appearance.rounding.normal
+            StyledText {
+                text: qsTr("Voltage: %1V").arg(root.batteryData.VOLTAGE || "...")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
+            }
 
-            Column {
-                id: child
+            StyledText {
+                text: qsTr("Cycles: %1").arg(root.batteryData.CYCLES || "...")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
+            }
 
-                anchors.centerIn: parent
-
-                Row {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: Appearance.spacing.small
-
-                    MaterialIcon {
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -font.pointSize / 10
-
-                        text: "warning"
-                        color: Colours.palette.m3onError
-                    }
-
-                    StyledText {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: qsTr("Performance Degraded")
-                        color: Colours.palette.m3onError
-                        font.family: Appearance.font.family.mono
-                        font.weight: 500
-                    }
-
-                    MaterialIcon {
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: -font.pointSize / 10
-
-                        text: "warning"
-                        color: Colours.palette.m3onError
-                    }
-                }
-
-                StyledText {
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    text: qsTr("Reason: %1").arg(PerformanceDegradationReason.toString(PowerProfiles.degradationReason))
-                    color: Colours.palette.m3onError
-                }
+            StyledText {
+                text: qsTr("Model: %1 %2").arg(root.batteryData.MANUFACTURER || "").arg(root.batteryData.MODEL || "")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
             }
         }
     }
 
     StyledRect {
-        id: profiles
-
-        property string current: {
-            const p = PowerProfiles.profile;
-            if (p === PowerProfile.PowerSaver)
-                return saver.icon;
-            if (p === PowerProfile.Performance)
-                return perf.icon;
-            return balance.icon;
-        }
-
         anchors.horizontalCenter: parent.horizontalCenter
-
-        implicitWidth: saver.implicitHeight + balance.implicitHeight + perf.implicitHeight + Appearance.padding.normal * 2 + Appearance.spacing.large * 2
-        implicitHeight: Math.max(saver.implicitHeight, balance.implicitHeight, perf.implicitHeight) + Appearance.padding.small * 2
-
+        implicitWidth: tlpInfo.implicitWidth + Appearance.padding.normal * 2
+        implicitHeight: tlpInfo.implicitHeight + Appearance.padding.normal * 2
+        
         color: Colours.palette.m3surfaceContainer
-        radius: Appearance.rounding.full
+        radius: Appearance.rounding.normal
 
-        StyledRect {
-            id: indicator
-
-            color: Colours.palette.m3primary
-            radius: Appearance.rounding.full
-            state: profiles.current
-
-            states: [
-                State {
-                    name: saver.icon
-
-                    Fill {
-                        item: saver
-                    }
-                },
-                State {
-                    name: balance.icon
-
-                    Fill {
-                        item: balance
-                    }
-                },
-                State {
-                    name: perf.icon
-
-                    Fill {
-                        item: perf
-                    }
-                }
-            ]
-
-            transitions: Transition {
-                AnchorAnimation {
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.emphasized
-                }
-            }
-        }
-
-        Profile {
-            id: saver
-
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: Appearance.padding.small
-
-            profile: PowerProfile.PowerSaver
-            icon: "energy_savings_leaf"
-        }
-
-        Profile {
-            id: balance
-
+        Column {
+            id: tlpInfo
             anchors.centerIn: parent
+            spacing: Appearance.spacing.small
 
-            profile: PowerProfile.Balanced
-            icon: "balance"
-        }
-
-        Profile {
-            id: perf
-
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: Appearance.padding.small
-
-            profile: PowerProfile.Performance
-            icon: "rocket_launch"
-        }
-    }
-
-    component Fill: AnchorChanges {
-        required property Item item
-
-        target: indicator
-        anchors.left: item.left
-        anchors.right: item.right
-        anchors.top: item.top
-        anchors.bottom: item.bottom
-    }
-
-    component Profile: Item {
-        required property string icon
-        required property int profile
-
-        implicitWidth: icon.implicitHeight + Appearance.padding.small * 2
-        implicitHeight: icon.implicitHeight + Appearance.padding.small * 2
-
-        StateLayer {
-            radius: Appearance.rounding.full
-            color: profiles.current === parent.icon ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
-
-            function onClicked(): void {
-                PowerProfiles.profile = parent.profile;
+            StyledText {
+                text: qsTr("Power Management")
+                font.weight: 600
+                color: Colours.palette.m3primary
             }
-        }
 
-        MaterialIcon {
-            id: icon
+            StyledText {
+                text: qsTr("Mode: %1").arg(UPower.onBattery ? "Battery" : "AC Power")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
+            }
 
-            anchors.centerIn: parent
+            StyledText {
+                text: qsTr("Managed by: TLP")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
+            }
 
-            text: parent.icon
-            font.pointSize: Appearance.font.size.large
-            color: profiles.current === text ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
-            fill: profiles.current === text ? 1 : 0
-
-            Behavior on fill {
-                NumberAnimation {
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.standard
-                }
+            StyledText {
+                text: qsTr("Governor: powersave")
+                font.family: Appearance.font.family.mono
+                font.pointSize: Appearance.font.size.small
             }
         }
     }

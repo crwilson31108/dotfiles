@@ -1152,6 +1152,14 @@ RESTORE_DEVICE_STATE_ON_STARTUP=0
 EOF
     fi
     
+    # Disable power-profiles-daemon if it exists (conflicts with TLP)
+    if systemctl is-enabled power-profiles-daemon >/dev/null 2>&1; then
+        log_info "Disabling power-profiles-daemon (conflicts with TLP)..."
+        sudo systemctl stop power-profiles-daemon 2>/dev/null || true
+        sudo systemctl disable power-profiles-daemon 2>/dev/null || true
+        sudo systemctl mask power-profiles-daemon 2>/dev/null || true
+    fi
+    
     # Enable TLP service
     sudo systemctl enable --now tlp.service 2>/dev/null || true
     
