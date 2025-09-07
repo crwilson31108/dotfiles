@@ -34,7 +34,7 @@ Item {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                Quickshell.execDetached(["sh", "-c", "selection=$(/home/caseyw/.config/quickshell/scripts/wifi-quick.sh | rofi -dmenu -p 'WiFi Networks' -theme '/home/caseyw/.config/quickshell/scripts/wifi-rofi.rasi') && case \"$selection\" in *'Network Settings'*) nm-connection-editor ;; *'Refresh Networks'*) nmcli device wifi rescan && notify-send 'WiFi' 'Networks refreshed' ;; *'Connected)'*) ;; *) nmcli device wifi connect \"$(echo \"$selection\" | sed 's/^[🔒🔓✅ ]*//')\" && notify-send 'WiFi' \"Connecting to $(echo \"$selection\" | sed 's/^[🔒🔓✅ ]*//')\" ;; esac"])
+                Quickshell.execDetached(["nmgui"])
             }
         }
     }

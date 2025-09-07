@@ -12,9 +12,7 @@ Image {
 
     asynchronous: true
     cache: false
-    fillMode: Image.PreserveAspectCrop
-    sourceSize.width: width
-    sourceSize.height: height
+    fillMode: Image.Stretch
 
     onPathChanged: shaProc.exec(["sha256sum", path.replace("file://", "")])
 

@@ -75,6 +75,16 @@ sudo pacman -S \
   sed \
   gawk \
   nushell \
+  yazi \
+  zoxide \
+  ripgrep \
+  fd \
+  tmux \
+  github-cli \
+  fzf \
+  ffmpegthumbnailer \
+  unar \
+  poppler \
   thunderbird \
   steam \
   waybar \
@@ -142,7 +152,8 @@ yay -S \
   bibata-cursor-theme \
   sddm \
   brave-bin \
-  caffeinate
+  caffeinate \
+  nmgui-bin
 ```
 
 ## Step 3: Papirus Icon Theme
@@ -169,6 +180,17 @@ papirus-folders -C red --theme Papirus-Dark
 - **foot** - Lightweight Wayland terminal emulator
 - **fish** - Friendly interactive shell
 - **nushell** - Modern shell with structured data
+- **yazi** - Modern terminal file manager with image previews
+  - **ffmpegthumbnailer** - Video thumbnail support for yazi
+  - **unar** - Archive preview support for yazi
+  - **jq** - JSON preview support for yazi
+  - **poppler** - PDF preview support for yazi
+- **zoxide** - Smarter cd command that learns your habits
+- **ripgrep** (rg) - Ultra-fast recursive grep with gitignore support
+- **fd** - Fast and user-friendly alternative to find
+- **tmux** - Terminal multiplexer for managing multiple sessions
+- **github-cli** (gh) - GitHub's official command line tool
+- **fzf** - Command-line fuzzy finder for files, history, and more
 
 ### Applications
 - **thunar** - File manager
@@ -178,6 +200,7 @@ papirus-folders -C red --theme Papirus-Dark
 - **blueman** - Bluetooth manager
 - **gnome-calculator** - Calculator app
 - **network-manager-applet** - Network management tray icon
+- **nmgui** (AUR) - Modern NetworkManager GUI with intuitive WiFi management
 - **brave-bin** - Privacy-focused Chromium-based browser
 - **thunderbird** - Email client
 - **steam** - Gaming platform
@@ -205,6 +228,7 @@ papirus-folders -C red --theme Papirus-Dark
 - **upower** - Power management
 - **jq** - JSON processor for workspace scripts
 - **ruby** - Runtime for fusuma touchpad gesture daemon
+- **nmgui** (AUR) - Clean NetworkManager interface (accessed via WiFi button in top bar)
 
 ### File System & Storage
 - **gvfs** - Virtual file system
@@ -309,6 +333,176 @@ initrd /initramfs-linux-cachyos.img
 - `acpi_osi="Linux"` - Better ACPI compatibility for modern hardware
 
 These parameters are specifically optimized for the AMD Ryzen AI 370 (Zen 5) architecture and will improve sleep/standby functionality.
+
+## AMD Laptop Power Optimization
+
+For maximum battery life on AMD laptops (especially with Ryzen 7000+ series), apply these power-saving tweaks:
+
+### 1. CPU Governor Configuration
+```bash
+# Set powersave governor with power preference
+echo "power" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference
+echo "powersave" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+```
+
+To make permanent, create `/etc/systemd/system/amd-powersave.service`:
+```ini
+[Unit]
+Description=Set AMD CPU powersave governor
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo "power" | tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference && echo "powersave" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable with: `sudo systemctl enable --now amd-powersave.service`
+
+### 2. Install TLP for ACPI Management
+```bash
+sudo pacman -S tlp tlp-rdw
+sudo systemctl enable --now tlp.service
+```
+
+Configure TLP to only handle ACPI (not CPU scaling) by editing `/etc/tlp.conf`:
+```bash
+# Let amd_pstate_epp handle CPU frequency
+CPU_SCALING_GOVERNOR_ON_AC=
+CPU_SCALING_GOVERNOR_ON_BAT=
+CPU_ENERGY_PERF_POLICY_ON_AC=
+CPU_ENERGY_PERF_POLICY_ON_BAT=
+
+# ACPI settings for better battery life
+SATA_LINKPWR_ON_BAT=max_performance
+WIFI_PWR_ON_BAT=on
+WOL_DISABLE=Y
+```
+
+### 3. RCU Kernel Parameters for Power Efficiency
+Add these to your kernel parameters for reduced CPU interrupts:
+
+**For systemd-boot** - Edit `/boot/loader/entries/*.conf`:
+```
+options root=UUID=YOUR-ROOT-UUID rw rcutree.enable_rcu_lazy=1 rcu_nocbs=all [other parameters...]
+```
+
+**For GRUB** - Edit `/etc/default/grub`:
+```bash
+GRUB_CMDLINE_LINUX_DEFAULT="... rcutree.enable_rcu_lazy=1 rcu_nocbs=all"
+```
+Then run: `sudo grub-mkconfig -o /boot/grub/grub.cfg`
+
+**Parameter explanations:**
+- `rcutree.enable_rcu_lazy=1` - Delays RCU callbacks to reduce CPU wakeups
+- `rcu_nocbs=all` - Offloads RCU processing from main CPUs, reducing interrupts
+
+### 4. Monitor Power Usage
+```bash
+# Check current CPU frequency and governor
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+
+# Monitor power consumption
+sudo powertop
+
+# Check TLP status
+sudo tlp-stat -s
+```
+
+### Expected Results
+With these optimizations on modern AMD laptops:
+- 20-30% longer battery life during light usage
+- Reduced idle power consumption
+- Cooler operation with less fan noise
+- No performance impact during demanding tasks (amd_pstate_epp handles boost when needed)
+
+## Memory Compression with Zram
+
+This setup includes optimized memory compression using zram instead of traditional swap or zswap, providing better performance especially on systems with fast CPUs and ample RAM.
+
+### What is Zram?
+
+**Zram** creates a compressed block device in RAM that acts as swap space. Unlike traditional swap:
+- Data stays compressed in RAM instead of hitting disk
+- Provides much lower latency (CPU + RAM only)
+- Reduces SSD wear by avoiding swap writes
+- Perfect for systems with 16GB+ RAM
+
+**Zram vs Zswap:**
+- **Zram**: Compressed RAM-only swap device (fast but bounded)
+- **Zswap**: Compressed RAM cache in front of disk swap (balanced with disk fallback)
+
+With 32GB RAM where typical usage is ~8GB, zram provides excellent performance without needing disk swap.
+
+### Automatic Zram Setup
+
+The installer automatically configures zram with:
+- **Size**: Half your RAM (16GB on 32GB systems)
+- **Algorithm**: zstd (fast and efficient compression)
+- **Priority**: Higher than any disk swap
+- **Swappiness**: Optimized for desktop responsiveness
+
+**Quick setup without full installation:**
+```bash
+./setup-zram.sh
+```
+
+### Manual Zram Configuration
+
+To manually configure or adjust zram settings:
+
+```bash
+# Install zram-generator
+sudo pacman -S zram-generator
+
+# Configure zram
+sudo nano /etc/systemd/zram-generator.conf
+```
+
+Paste this configuration:
+```ini
+[zram0]
+zram-size = ram / 2
+compression-algorithm = zstd
+swap-priority = 60
+```
+
+**Configuration options:**
+- `zram-size`: How much RAM to allocate (e.g., `ram / 2`, `8G`, `16G`)
+- `compression-algorithm`: zstd (recommended), lz4, lz4hc
+- `swap-priority`: Higher numbers are used first
+
+Activate the changes:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart systemd-zram-setup@zram0.service
+```
+
+Verify zram is working:
+```bash
+# Check swap status
+swapon --show
+
+# View compression statistics
+zramctl
+```
+
+### Tuning Swappiness
+
+Adjust how aggressively the system uses zram:
+```bash
+# More aggressive swapping (good for zram)
+sudo sysctl vm.swappiness=100
+
+# Make it permanent
+echo "vm.swappiness=100" | sudo tee -a /etc/sysctl.d/99-swappiness.conf
+```
+
+**Note**: The kernel parameter `zswap.enabled=0` in the systemd-boot configuration ensures zswap is disabled in favor of zram.
 
 ## Flatpak Applications
 
@@ -484,7 +678,7 @@ To disable autologin later, comment out these lines with `#`.
 - `Super + T` - Email client (Thunderbird)
 - `Super + P` - Power menu (quickshell session)
 - `Super + Shift + P` - Calculator
-- `Super + Shift + E` - Emoji picker (rofimoji)
+- `Super + Shift + E` - Terminal file manager (yazi)
 
 ### Window Management
 - `Super + Q` - Close window
@@ -520,6 +714,169 @@ To disable autologin later, comment out these lines with `#`.
 - `Three-finger swipe left/right` - Navigate workspaces (native Hyprland - smooth)
 - `Three-finger swipe up/down` - Toggle workspace manager (Quickshell via Fusuma)
 - `Super + Tab` - Toggle workspace manager (keyboard shortcut)
+
+## 💡 CLI Utilities Tips & Tricks
+
+### Zoxide - Smarter Navigation
+
+**Setup (automatically done by install.sh):**
+```bash
+# For Zsh - add to ~/.zshrc
+eval "$(zoxide init zsh)"
+
+# For Fish - add to ~/.config/fish/conf.d/zoxide.fish
+zoxide init fish | source
+
+# For Bash - add to ~/.bashrc
+eval "$(zoxide init bash)"
+```
+
+**Usage:**
+```bash
+# After cd'ing around for a while, zoxide learns your habits
+z proj        # Jumps to ~/Documents/GitHub/dotfiles/project
+z dot         # Jumps to ~/Documents/GitHub/dotfiles
+zi            # Interactive selection with fzf
+
+# Add to your shell config for even better integration
+alias cd="z"
+```
+
+### Ripgrep (rg) - Lightning Fast Search
+```bash
+# Basic search
+rg "TODO"                    # Search for TODO in current directory
+rg -i "config"              # Case-insensitive search
+rg "^import" -g "*.py"      # Search only in Python files
+rg "error" --type rust      # Search only in Rust files
+rg -C 3 "function"          # Show 3 lines of context
+
+# Advanced patterns
+rg -e "TODO|FIXME|HACK"     # Multiple patterns
+rg "class.*Config"          # Regex patterns
+rg --files | rg "test"      # Find files with 'test' in name
+```
+
+### fd - Intuitive File Finding
+```bash
+# Find files by name
+fd "config"                  # Find all files/dirs with 'config'
+fd -e py                    # Find all Python files
+fd -H "^\\."                 # Find hidden files
+fd -t d "src"               # Find only directories named 'src'
+
+# Powerful combinations with other tools
+fd -e rs -x wc -l          # Count lines in all Rust files
+fd -e jpg -x convert {} {.}.png  # Convert all JPGs to PNG
+```
+
+### fzf - Fuzzy Finding Everything
+```bash
+# File navigation
+vim $(fzf)                   # Open file in vim with fuzzy search
+cd $(fd -t d | fzf)         # cd to directory with fuzzy search
+
+# Command history (add to shell config)
+history | fzf | sh          # Search and execute from history
+
+# Git integration
+git log --oneline | fzf | awk '{print $1}' | xargs git show
+
+# Kill processes interactively
+ps aux | fzf | awk '{print $2}' | xargs kill
+
+# Pro tip: Add these to your shell config
+alias ff='fd --type f | fzf | xargs -r nvim'  # Fuzzy find and edit
+alias fcd='cd $(fd --type d | fzf)'           # Fuzzy cd
+```
+
+### tmux - Terminal Multiplexing
+```bash
+# Basic usage
+tmux                        # Start new session
+tmux new -s work           # New named session
+tmux ls                    # List sessions
+tmux attach -t work        # Attach to session
+
+# Key bindings (default prefix: Ctrl+b)
+Ctrl+b c    # New window
+Ctrl+b ,    # Rename window
+Ctrl+b %    # Split vertically
+Ctrl+b "    # Split horizontally
+Ctrl+b arrow # Navigate panes
+Ctrl+b d    # Detach from session
+Ctrl+b [    # Enter scroll mode (q to exit)
+```
+
+### GitHub CLI (gh) - GitHub from Terminal
+```bash
+# Repository operations
+gh repo create myproject --private
+gh repo clone user/repo
+gh repo view --web         # Open in browser
+
+# Pull requests
+gh pr create --title "Add feature" --body "Description"
+gh pr list
+gh pr view 123
+gh pr checkout 123         # Checkout PR locally
+
+# Issues
+gh issue create
+gh issue list --label "bug"
+gh issue close 42
+
+# Workflows
+gh run list
+gh run watch              # Watch latest run
+gh workflow run tests.yml # Trigger workflow
+```
+
+### Yazi - Terminal File Manager
+```bash
+# Navigation
+h/j/k/l     # Navigate (vim-style)
+Enter       # Open file/enter directory
+H           # Go to parent directory
+~           # Go to home
+Space       # Select/deselect
+v           # Select all
+
+# Operations
+y           # Yank (copy)
+x           # Cut
+p           # Paste
+d           # Delete (move to trash)
+D           # Delete permanently
+r           # Rename
+/           # Search in current directory
+
+# Preview
+Tab         # Toggle preview
+W           # Toggle word wrap in preview
+```
+
+### Power User Combinations
+```bash
+# Find and replace across project
+fd -e rs | xargs rg -l "old_function" | xargs sed -i 's/old_function/new_function/g'
+
+# Interactive git commit browser
+git log --oneline | fzf --preview 'git show --color=always {1}' | awk '{print $1}'
+
+# Find large files interactively
+fd -t f -x du -h | sort -rh | head -20 | fzf
+
+# Quick project switcher (add to shell config)
+function proj() {
+  cd $(fd -t d -d 3 . ~/Documents/GitHub | fzf)
+}
+
+# Fuzzy kill process
+function fkill() {
+  ps aux | fzf | awk '{print $2}' | xargs kill -9
+}
+```
 
 ## 🚀 LazyVim Configuration
 

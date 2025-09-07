@@ -225,12 +225,20 @@ install_packages() {
         "bat"
         "fd"
         "ripgrep"
+        "yazi"
+        "zoxide"             # Smarter cd command
+        "tmux"               # Terminal multiplexer
+        "github-cli"         # GitHub CLI tool
+        "fzf"                # Fuzzy finder
+        "ffmpegthumbnailer"  # Video thumbnails for yazi
+        "unar"               # Archive preview for yazi
+        "jq"                 # JSON preview for yazi
+        "poppler"            # PDF preview for yazi
         "cliphist"
         "caffeinate"
         "curl"
         "wget"
         "git"
-        "jq"
         "ruby"
         "xdg-user-dirs"
     )
@@ -338,6 +346,10 @@ install_packages() {
         "vim"
         "nano"
         "neovim"
+        "zram-generator"  # Memory compression for better performance
+        "tlp"             # Advanced power management
+        "tlp-rdw"         # TLP radio device wizard
+        "powertop"        # Power consumption monitoring
     )
     
     # AUR packages (essential for functionality)
@@ -353,6 +365,7 @@ install_packages() {
         "gnome-epub-thumbnailer" # EPUB thumbnails
         "foliate"                # Modern ebook reader
         "brave-bin"              # Brave browser
+        "nmgui-bin"              # NetworkManager GUI for easy WiFi management
     )
     
     # Install packages with better error handling
@@ -528,6 +541,9 @@ setup_shell() {
             log_warning "Failed to change shell to fish, keeping current shell"
         }
         log_success "Fish shell configured"
+        
+        # Setup zoxide for fish
+        setup_zoxide_fish
     elif command -v zsh >/dev/null 2>&1; then
         log_info "Setting zsh as default shell..."
         if ! grep -q "$(which zsh)" /etc/shells; then
@@ -537,7 +553,49 @@ setup_shell() {
             log_warning "Failed to change shell to zsh, keeping current shell"
         }
         log_success "Zsh shell configured"
+        
+        # Setup zoxide for zsh
+        setup_zoxide_zsh
     fi
+}
+
+# Setup zoxide for fish shell
+setup_zoxide_fish() {
+    log_info "Configuring zoxide for fish shell..."
+    
+    # Ensure fish config directory exists
+    mkdir -p "$USER_CONFIG/fish/conf.d"
+    
+    # Add zoxide initialization to fish
+    cat > "$USER_CONFIG/fish/conf.d/zoxide.fish" << 'EOF'
+# Initialize zoxide for fish
+if command -v zoxide >/dev/null
+    zoxide init fish | source
+end
+EOF
+    
+    log_success "Zoxide configured for fish"
+}
+
+# Setup zoxide for zsh shell
+setup_zoxide_zsh() {
+    log_info "Configuring zoxide for zsh shell..."
+    
+    # Add zoxide initialization to .zshrc
+    local zshrc="$HOME/.zshrc"
+    
+    # Check if zoxide init already exists
+    if ! grep -q "zoxide init zsh" "$zshrc" 2>/dev/null; then
+        cat >> "$zshrc" << 'EOF'
+
+# Initialize zoxide
+if command -v zoxide >/dev/null; then
+    eval "$(zoxide init zsh)"
+fi
+EOF
+    fi
+    
+    log_success "Zoxide configured for zsh"
 }
 
 # Setup system services
@@ -888,9 +946,10 @@ Super + Return            Open terminal (foot)
 Super + Space             Application launcher
 Super + A                 Application overview
 Super + E                 File manager (Thunar)
+Super + T                 Email client (Thunderbird)
 Super + B                 Browser
 Super + P                 Power menu
-Super + Shift + E         Emoji picker
+Super + Shift + E         Terminal file manager (yazi)
 
 📷 SYSTEM:
 Super + W                 Change wallpaper
@@ -972,6 +1031,139 @@ EOF
     log_success "Hardware optimization completed"
 }
 
+# Setup zram for memory compression
+setup_zram() {
+    log_section "ZRAM MEMORY COMPRESSION SETUP"
+    
+    # Check if zram is already configured
+    if [ -f "/etc/systemd/zram-generator.conf" ]; then
+        log_info "Zram configuration already exists, checking status..."
+        if systemctl is-active --quiet systemd-zram-setup@zram0.service; then
+            log_success "Zram is already active and configured"
+            return
+        fi
+    fi
+    
+    log_info "Configuring zram for improved memory management..."
+    
+    # Create zram configuration
+    sudo tee /etc/systemd/zram-generator.conf >/dev/null << 'EOF'
+[zram0]
+zram-size = ram / 2
+compression-algorithm = zstd
+swap-priority = 60
+EOF
+    
+    log_info "Activating zram service..."
+    sudo systemctl daemon-reload
+    sudo systemctl start systemd-zram-setup@zram0.service 2>/dev/null || {
+        log_warning "Failed to start zram service immediately, will be active after reboot"
+    }
+    
+    # Check if zram is working
+    if swapon --show | grep -q zram0; then
+        log_success "Zram activated successfully"
+        
+        # Show zram statistics
+        if command -v zramctl >/dev/null 2>&1; then
+            log_info "Zram statistics:"
+            zramctl | head -2
+        fi
+    else
+        log_info "Zram will be fully active after reboot"
+    fi
+    
+    # Configure swappiness for better performance with zram
+    log_info "Optimizing swappiness for zram..."
+    echo "vm.swappiness=100" | sudo tee /etc/sysctl.d/99-swappiness.conf >/dev/null
+    sudo sysctl -p /etc/sysctl.d/99-swappiness.conf >/dev/null 2>&1 || true
+    
+    log_success "Zram memory compression configured"
+}
+
+# Setup AMD power optimization
+setup_amd_power_optimization() {
+    log_section "AMD POWER OPTIMIZATION SETUP"
+    
+    # Check if AMD CPU is detected
+    if ! lscpu | grep -q "AMD"; then
+        log_info "Non-AMD CPU detected, skipping AMD-specific power optimizations"
+        return
+    fi
+    
+    log_info "AMD CPU detected, applying power optimizations..."
+    
+    # Create and install AMD powersave service
+    log_info "Creating AMD powersave service..."
+    cat > /tmp/amd-powersave.service << 'EOF'
+[Unit]
+Description=Set AMD CPU powersave governor
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo "power" | tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference && echo "powersave" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    sudo cp /tmp/amd-powersave.service /etc/systemd/system/
+    sudo systemctl daemon-reload
+    sudo systemctl enable amd-powersave.service 2>/dev/null || true
+    
+    # Configure TLP for ACPI-only management
+    log_info "Configuring TLP for ACPI-only management..."
+    if [ -f "$DOTFILES_DIR/tlp-acpi-only.conf" ]; then
+        sudo cp "$DOTFILES_DIR/tlp-acpi-only.conf" /etc/tlp.conf
+    else
+        # Create TLP config if not in dotfiles
+        sudo tee /etc/tlp.conf >/dev/null << 'EOF'
+# TLP Configuration - ACPI Only Mode
+# This config lets amd_pstate_epp handle CPU frequency scaling
+
+# Disable CPU frequency scaling management
+CPU_SCALING_GOVERNOR_ON_AC=
+CPU_SCALING_GOVERNOR_ON_BAT=
+CPU_ENERGY_PERF_POLICY_ON_AC=
+CPU_ENERGY_PERF_POLICY_ON_BAT=
+
+# Disable CPU boost management
+CPU_BOOST_ON_AC=
+CPU_BOOST_ON_BAT=
+
+# ACPI settings for better battery life
+SATA_LINKPWR_ON_AC=max_performance
+SATA_LINKPWR_ON_BAT=min_power
+WIFI_PWR_ON_AC=off
+WIFI_PWR_ON_BAT=on
+WOL_DISABLE=Y
+PCIE_ASPM_ON_AC=default
+PCIE_ASPM_ON_BAT=powersupersave
+RUNTIME_PM_ON_AC=on
+RUNTIME_PM_ON_BAT=auto
+USB_AUTOSUSPEND=1
+USB_EXCLUDE_PHONE=1
+SOUND_POWER_SAVE_ON_AC=0
+SOUND_POWER_SAVE_ON_BAT=1
+SOUND_POWER_SAVE_CONTROLLER=Y
+RESTORE_DEVICE_STATE_ON_STARTUP=0
+EOF
+    fi
+    
+    # Enable TLP service
+    sudo systemctl enable --now tlp.service 2>/dev/null || true
+    
+    # Add kernel parameters info
+    log_info "Kernel parameters for optimal power saving:"
+    log_info "Add these to your bootloader: rcutree.enable_rcu_lazy=1 rcu_nocbs=all"
+    log_info "For systemd-boot: Edit /boot/loader/entries/*.conf"
+    log_info "For GRUB: Edit /etc/default/grub and run grub-mkconfig"
+    
+    log_success "AMD power optimization configured"
+}
+
 # Print completion message
 print_completion() {
     log_section "INSTALLATION COMPLETE"
@@ -992,6 +1184,8 @@ print_completion() {
     ║  ✅ Brave browser and Flatpak configured                        ║
     ║  ✅ Sample wallpapers and keybind reference                     ║
     ║  ✅ Hardware-specific optimizations applied                     ║
+    ║  ✅ Zram memory compression configured                          ║
+    ║  ✅ AMD power optimization configured (TLP + powersave)         ║
     ║  ✅ Automatic configuration backups created                     ║
     ║                                                                  ║
     ╚══════════════════════════════════════════════════════════════════╝
@@ -1039,6 +1233,8 @@ main() {
     setup_wallpapers
     create_keybind_reference
     optimize_hardware
+    setup_zram
+    setup_amd_power_optimization
     
     print_completion
 }

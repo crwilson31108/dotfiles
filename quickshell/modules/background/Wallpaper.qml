@@ -43,7 +43,7 @@ Item {
         anchors.fill: parent
 
         opacity: 0
-        scale: Wallpapers.showPreview ? 1 : 0.8
+        scale: 1
 
         onStatusChanged: {
             if (status === Image.Ready)
