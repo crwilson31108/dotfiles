@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ╔══════════════════════════════════════════════════════════════════════╗
-# ║                    SDDM ROSE PINE THEME INSTALLER                    ║
-# ║                 Install SilentSDDM with Rose Pine                    ║
+# ║                    SDDM SILENT THEME INSTALLER                       ║
+# ║         Install SilentSDDM with HiDPI and Wayland support           ║
 # ╚══════════════════════════════════════════════════════════════════════╝
 
 set -e
@@ -50,8 +50,8 @@ print_header() {
     cat << "EOF"
     ╔══════════════════════════════════════════════════════════════════╗
     ║                                                                  ║
-    ║            SDDM ROSE PINE THEME INSTALLER                        ║
-    ║         Install SilentSDDM with Rose Pine at 2x scale           ║
+    ║            SDDM SILENT THEME INSTALLER                          ║
+    ║      Install SilentSDDM with HiDPI and Wayland support         ║
     ║                                                                  ║
     ╚══════════════════════════════════════════════════════════════════╝
 EOF
@@ -101,7 +101,7 @@ install_theme() {
     
     log_info "Configuring SDDM..."
     sudo mkdir -p /etc/sddm.conf.d
-    sudo cp "$SCRIPT_DIR/etc/sddm.conf.d/10-theme.conf" /etc/sddm.conf.d/
+    sudo cp "$SCRIPT_DIR/etc/sddm.conf.d/"*.conf /etc/sddm.conf.d/
     
     log_info "Creating Hyprland session entry..."
     if [ ! -f "/usr/share/wayland-sessions/hyprland.desktop" ]; then
@@ -116,6 +116,12 @@ EOF
     
     log_info "Enabling SDDM service..."
     sudo systemctl enable sddm
+    
+    # Set up user avatar
+    log_info "Setting up user avatar..."
+    if [ -f "$SCRIPT_DIR/scripts/setup-sddm-avatar.sh" ]; then
+        bash "$SCRIPT_DIR/scripts/setup-sddm-avatar.sh"
+    fi
     
     # Clean up
     rm -rf /tmp/SilentSDDM

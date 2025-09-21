@@ -34,7 +34,7 @@ Row {
             id: pfp
 
             anchors.fill: parent
-            source: `${Paths.home}/.face`
+            source: "/usr/share/pixmaps/archlinux-logo.png"
             fillMode: Image.PreserveAspectCrop
             smooth: true
             mipmap: true
@@ -55,10 +55,7 @@ Row {
             hoverEnabled: true
 
             onClicked: {
-                root.visibilities.dashboard = false;
-                Quickshell.execDetached(["/home/caseyw/.config/quickshell/scripts/avatar-picker.sh"]);
-                // Start timer immediately since we can't track process completion
-                refreshTimer.start();
+                // Avatar is hardcoded to Arch logo - picker disabled
             }
 
             StyledRect {
@@ -116,18 +113,6 @@ Row {
             }
         }
 
-        
-        Timer {
-            id: refreshTimer
-            interval: 3000  // 3 seconds
-            repeat: false
-            onTriggered: {
-                // Force refresh by temporarily clearing and resetting source
-                var currentSource = pfp.source;
-                pfp.source = "";
-                pfp.source = currentSource;
-            }
-        }
     }
 
     Column {
